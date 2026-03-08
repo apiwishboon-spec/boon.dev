@@ -199,6 +199,25 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-soft border-0 h-100">
+                            <div class="card-body p-4">
+                                <div class="text-center mb-3">
+                                    <i class="fa-solid fa-microphone fa-4x text-primary" style="font-size: 4rem;"></i>
+                                </div>
+                                <h5 class="card-title fw-bold">Voice Over - School Guest</h5>
+                                <p class="card-text text-muted small">Voice over recording for school guest presentation</p>
+                                <div class="mb-3">
+                                    <span class="badge bg-primary">MP3</span>
+                                    <span class="badge bg-secondary">Audio</span>
+                                    <span class="badge bg-warning text-dark">Password Protected</span>
+                                </div>
+                                <button class="btn btn-warning shadow-soft w-100" onclick="showPasswordModal()">
+                                    <i class="fa-solid fa-lock me-2"></i>Download with Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -214,6 +233,37 @@
         </div>
     </section>
 
+    <!-- Password Modal -->
+    <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordModalLabel">
+                        <i class="fa-solid fa-lock me-2"></i>Password Required
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>This file is password protected. Please enter the password to download:</p>
+                    <div class="mb-3">
+                        <label for="passwordInput" class="form-label">Password:</label>
+                        <input type="password" class="form-control" id="passwordInput" placeholder="Enter password">
+                        <div class="form-text">Contact the file owner if you don't have the password.</div>
+                    </div>
+                    <div id="passwordError" class="alert alert-danger d-none">
+                        <i class="fa-solid fa-exclamation-triangle me-2"></i>Incorrect password. Please try again.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="checkPassword()">
+                        <i class="fa-solid fa-download me-2"></i>Download
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="py-4 text-muted small text-center">
         <p>&copy; 2025 APIWISH ANUTARAVANICHKUL.</p>
@@ -222,6 +272,41 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
+    
+    <script>
+        function showPasswordModal() {
+            const modal = new bootstrap.Modal(document.getElementById('passwordModal'));
+            modal.show();
+        }
+        
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('passwordError');
+            
+            // You can change this password to whatever you want
+            if (password === 'schoolguest2025') {
+                // Correct password - download the file
+                window.location.href = 'downloads/file resorce/voice_over_eng_ver1.0_sk.mp3';
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
+                // Clear password field
+                document.getElementById('passwordInput').value = '';
+                errorDiv.classList.add('d-none');
+            } else {
+                // Wrong password - show error
+                errorDiv.classList.remove('d-none');
+                // Clear password field
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+        
+        // Allow Enter key to submit password
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
 </body>
 
 </html>
