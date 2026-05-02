@@ -1,5 +1,19 @@
 [
   {
+    "title": "นักเรียนดีเด่นด้านคุณธรรม",
+    "description": "ความเสียสละ",
+    "image": "S__24813602.jpg",
+    "alt": "นักเรียนดีเด่นด้านคุณธรรม",
+    "pin": "bg-warning",
+    "rotation": "1deg",
+    "badge": {
+      "classes": "bg-success text-white",
+      "icon": "fa-solid fa-heart",
+      "text": "Outstanding",
+      "title": "Outstanding Student in Morality (Sacrifice)"
+    }
+  },
+  {
     "title": "ASMOPSS Thailand 2023",
     "description": "English Primary - Bronze Medalist",
     "image": "eng-2023-bronze.jpg",
@@ -11,136 +25,6 @@
       "icon": "fa-solid fa-medal",
       "text": "Bronze Medalist",
       "title": "Asian Science and Mathematics Olympiad for Primary and Secondary Schools"
-    }
-  },
-  {
-    "title": "Python Fundamentals",
-    "description": "Online Certification",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+2",
-    "alt": "Python Certification",
-    "pin": "bg-primary",
-    "rotation": "1deg",
-    "badge": {
-      "classes": "bg-info text-white",
-      "icon": "fa-solid fa-certificate",
-      "text": "Verified"
-    }
-  },
-  {
-    "title": "Math Olympiad",
-    "description": "District Qualifier",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+3",
-    "alt": "Math Olympiad",
-    "pin": "bg-success",
-    "rotation": "-1deg",
-    "badge": {
-      "classes": "bg-danger text-white",
-      "icon": "fa-solid fa-medal",
-      "text": "Finalist"
-    }
-  },
-  {
-    "title": "Robotics Excellence",
-    "description": "Innovation Challenge 2024",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+4",
-    "alt": "Robotics Award",
-    "pin": "bg-info",
-    "rotation": "2deg",
-    "badge": {
-      "classes": "bg-primary text-white",
-      "icon": "fa-solid fa-robot",
-      "text": "Outstanding"
-    }
-  },
-  {
-    "title": "Science Fair",
-    "description": "Regional Finals",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+5",
-    "alt": "Science Project",
-    "pin": "bg-warning",
-    "rotation": "-2deg",
-    "badge": {
-      "classes": "bg-success text-white",
-      "icon": "fa-solid fa-microscope",
-      "text": "Honored"
-    }
-  },
-  {
-    "title": "Academic Merit",
-    "description": "Semester Honors",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+6",
-    "alt": "Academic Merit",
-    "pin": "bg-danger",
-    "rotation": "1deg",
-    "badge": {
-      "classes": "bg-info text-white",
-      "icon": "fa-solid fa-star",
-      "text": "Distinction"
-    }
-  },
-  {
-    "title": "Coding Sprint",
-    "description": "48hr Hackathon",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+7",
-    "alt": "Coding Sprint",
-    "pin": "bg-primary",
-    "rotation": "-1deg",
-    "badge": {
-      "classes": "bg-secondary text-white",
-      "icon": "fa-solid fa-code",
-      "text": "Participant"
-    }
-  },
-  {
-    "title": "Psychology Insight",
-    "description": "Research Essay Prize",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+8",
-    "alt": "Psychology Essay",
-    "pin": "bg-warning",
-    "rotation": "2deg",
-    "badge": {
-      "classes": "bg-primary text-white",
-      "icon": "fa-solid fa-brain",
-      "text": "Winner"
-    }
-  },
-  {
-    "title": "Celestial Observer",
-    "description": "Astronomy Club 2024",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+9",
-    "alt": "Astronomy Club",
-    "pin": "bg-info",
-    "rotation": "-3deg",
-    "badge": {
-      "classes": "bg-info text-white",
-      "icon": "fa-solid fa-telescope",
-      "text": "Member"
-    }
-  },
-  {
-    "title": "Student Leader",
-    "description": "Excellence in Service",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+10",
-    "alt": "Leadership Award",
-    "pin": "bg-success",
-    "rotation": "1deg",
-    "badge": {
-      "classes": "bg-warning text-dark",
-      "icon": "fa-solid fa-users",
-      "text": "Gold"
-    }
-  },
-  {
-    "title": "Python Advanced",
-    "description": "Algorithm Master",
-    "image": "https://via.placeholder.com/400x300?text=Certificate+11",
-    "alt": "Python Advanced",
-    "pin": "bg-primary",
-    "rotation": "-2deg",
-    "badge": {
-      "classes": "bg-success text-white",
-      "icon": "fa-solid fa-square-check",
-      "text": "Verified"
     }
   }
 ]
