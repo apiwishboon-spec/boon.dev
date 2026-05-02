@@ -201,4 +201,44 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // 6. Dynamic Prizes Loading
+    const prizesContainer = document.getElementById('prizes-container');
+    if (prizesContainer) {
+        fetch('prizes.json')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach((prize, index) => {
+                    const extraClass = index === 0 ? ' featured-achievement' : '';
+                    const badgeTitle = prize.badge.title ? `title="${prize.badge.title}"` : '';
+
+                    const cardHtml = `
+                        <div class="col-md-4 stagger-item">
+                            <div class="card shadow-soft border-0 h-100 project-card${extraClass}">
+                                <div class="card-body text-center p-4">
+                                    <div class="certificate-frame archive mx-auto" style="transform: rotate(${prize.rotation});">
+                                        <div class="certificate-inner">
+                                            <img src="${prize.image}" alt="${prize.alt}" class="img-fluid d-block mx-auto">
+                                        </div>
+                                        <div class="certificate-pin ${prize.pin}"></div>
+                                    </div>
+                                    <h3 class="h5 fw-bold mt-3">${prize.title}</h3>
+                                    <p class="text-muted small">${prize.description}</p>
+                                    <span class="badge ${prize.badge.classes}" ${badgeTitle}>
+                                        <i class="${prize.badge.icon} me-1"></i> ${prize.badge.text}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    prizesContainer.insertAdjacentHTML('beforeend', cardHtml);
+                });
+
+                // Observe the new items to trigger fade-in animations if we have the generic observer
+                if (typeof observer !== 'undefined') {
+                    prizesContainer.querySelectorAll('.stagger-item').forEach(item => observer.observe(item));
+                }
+            })
+            .catch(error => console.error('Error loading prizes:', error));
+    }
 });

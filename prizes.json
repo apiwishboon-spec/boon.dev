@@ -1,0 +1,16 @@
+[
+  {
+    "title": "ASMOPSS Thailand 2023",
+    "description": "English Primary - Bronze Medalist",
+    "image": "eng-2023-bronze.jpg",
+    "alt": "ASMOPSS Thailand 2023 Bronze Medalist Certificate",
+    "pin": "bg-danger",
+    "rotation": "-2deg",
+    "badge": {
+      "classes": "bg-secondary text-white",
+      "icon": "fa-solid fa-medal",
+      "text": "Bronze Medalist",
+      "title": "Asian Science and Mathematics Olympiad for Primary and Secondary Schools"
+    }
+  }
+]
