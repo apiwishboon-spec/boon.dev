@@ -1,0 +1,32 @@
+[
+    {
+        "title": "Launching the New Portfolio",
+        "date": "2026-05-09",
+        "tags": [
+            "portfolio",
+            "design"
+        ],
+        "excerpt": "I redesigned boon.is-a.dev to feel cleaner, faster, and easier to navigate.",
+        "content": "This release focuses on visual polish and better page flow. Next update: improve loading speed and add more project deep-dives."
+    },
+    {
+        "title": "Building an Uptime Dashboard",
+        "date": "2026-05-09",
+        "tags": [
+            "uptime",
+            "javascript"
+        ],
+        "excerpt": "Added a simple monitoring page for site and service health.",
+        "content": "The dashboard checks key endpoints every minute and supports manual refresh for quick troubleshooting."
+    },
+    {
+        "title": "What I am Learning This Month",
+        "date": "2026-05-01",
+        "tags": [
+            "learning",
+            "python"
+        ],
+        "excerpt": "A snapshot of topics I am currently studying in coding and science.",
+        "content": "I am focusing on Python automation, better frontend structure, and clearer documentation habits for each project."
+    }
+]
