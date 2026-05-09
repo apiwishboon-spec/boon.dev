@@ -42,9 +42,12 @@ function renderPosts(posts) {
                     <h2 class="h5 fw-bold">${escapeHtml(post.title)}</h2>
                     <p class="mb-2">${escapeHtml(post.excerpt)}</p>
                     <p class="small text-muted mb-3">${escapeHtml(post.content)}</p>
-                    <div class="d-flex flex-wrap gap-2">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
                         ${post.tags.map(tag => `<span class="badge bg-light text-dark border">${escapeHtml(tag)}</span>`).join("")}
                     </div>
+                    <button class="btn btn-primary btn-sm" onclick="showPostModal(${posts.indexOf(post)})">
+                        Read More <i class="fas fa-arrow-right ms-1"></i>
+                    </button>
                 </div>
             </div>
         </article>
@@ -97,6 +100,28 @@ async function loadPosts() {
         `;
         console.error(error);
     }
+}
+
+function showPostModal(postIndex) {
+    const post = posts[postIndex];
+    if (!post) return;
+
+    document.getElementById('postModalTitle').textContent = post.title;
+    document.getElementById('postModalDate').textContent = formatDate(post.date);
+    document.getElementById('postModalImage').src = post.image || '../icon.png';
+    document.getElementById('postModalImage').alt = post.title;
+    document.getElementById('postModalContent').innerHTML = `
+        <p class="lead">${escapeHtml(post.excerpt)}</p>
+        <div class="mb-3">${escapeHtml(post.fullContent || post.content)}</div>
+    `;
+    
+    const tagsContainer = document.getElementById('postModalTags');
+    tagsContainer.innerHTML = post.tags.map(tag => 
+        `<span class="badge bg-primary me-2">${escapeHtml(tag)}</span>`
+    ).join('');
+
+    const modal = new bootstrap.Modal(document.getElementById('postModal'));
+    modal.show();
 }
 
 searchInput.addEventListener("input", applyFilters);
