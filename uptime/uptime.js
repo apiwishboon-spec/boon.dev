@@ -1,7 +1,7 @@
 const SERVICES = [
     { name: "Main Portfolio", url: "https://boon.is-a.dev" },
-    { name: "Blog", url: "https://blog.boon.is-a.dev" },
-    { name: "Uptime Dashboard", url: "https://uptime.boon.is-a.dev" }
+    { name: "Blog", url: "https://boon.is-a.dev/blog/" },
+    { name: "Uptime Dashboard", url: "https://boon.is-a.dev/uptime/" }
 ];
 
 const CHECK_TIMEOUT_MS = 7000;
