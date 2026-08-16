@@ -40,8 +40,7 @@ function renderPosts(posts) {
                 <div class="card-body">
                     <p class="small text-muted mb-2">${formatDate(post.date)}</p>
                     <h2 class="h5 fw-bold">${escapeHtml(post.title)}</h2>
-                    <p class="mb-2">${escapeHtml(post.excerpt)}</p>
-                    <p class="small text-muted mb-3">${escapeHtml(post.content)}</p>
+                    <p class="mb-3">${escapeHtml(post.excerpt)}</p>
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         ${post.tags.map(tag => `<span class="badge bg-light text-dark border">${escapeHtml(tag)}</span>`).join("")}
                     </div>
@@ -112,7 +111,7 @@ function showPostModal(postIndex) {
     document.getElementById('postModalImage').alt = post.title;
     document.getElementById('postModalContent').innerHTML = `
         <p class="lead">${escapeHtml(post.excerpt)}</p>
-        <div class="mb-3">${escapeHtml(post.fullContent || post.content)}</div>
+        <div class="mb-3">${escapeHtml(post.content)}</div>
     `;
     
     const tagsContainer = document.getElementById('postModalTags');

@@ -7,9 +7,8 @@
             "SK"
         ],
         "excerpt": "I am moving up to M.2 at my school, and I am really excited for the new year ahead.",
-        "content": "I am moving up to M.2 at my school, and I am really excited about it. It feels amazing to start a new school year, meet new teachers, learn new things, and take on new challenges. I hope this year will be full of fun experiences, great memories, and lots of opportunities to grow. 🚀",
-        "image": "../profile_me.jpg",
-        "fullContent": "I am moving up to M.2 at my school, and I am really excited about it. It feels amazing to start a new school year, meet new teachers, learn new things, and take on new challenges. I hope this year will be full of fun experiences, great memories, and lots of opportunities to grow. This new chapter brings fresh opportunities to learn advanced topics, participate in competitions, and make new friends. I'm particularly looking forward to diving deeper into computer science and mathematics, and hopefully joining some clubs that align with my interests in technology and science. 🚀"
+        "content": "I am moving up to M.2 at my school, and I am really excited about it. It feels amazing to start a new school year, meet new teachers, learn new things, and take on new challenges. I hope this year will be full of fun experiences, great memories, and lots of opportunities to grow. This new chapter brings fresh opportunities to learn advanced topics, participate in competitions, and make new friends. I'm particularly looking forward to diving deeper into computer science and mathematics, and hopefully joining some clubs that align with my interests in technology and science. 🚀",
+        "image": "../profile_me.jpg"
     },
     {
         "title": "Launching the New Portfolio",
@@ -19,9 +18,8 @@
             "design"
         ],
         "excerpt": "I redesigned boon.is-a.dev to feel cleaner, faster, and easier to navigate.",
-        "content": "This release focuses on visual polish and better page flow. Next update: improve loading speed and add more project deep-dives.",
-        "image": "../icon.png",
-        "fullContent": "I redesigned boon.is-a.dev to feel cleaner, faster, and easier to navigate. This release focuses on visual polish and better page flow. The new design features a modern space theme with interactive elements, smooth animations, and a responsive layout that works great on all devices. I've also improved the project showcase section to better highlight my work. Next update: improve loading speed and add more project deep-dives with detailed case studies and technical implementations."
+        "content": "I redesigned boon.is-a.dev to feel cleaner, faster, and easier to navigate. This release focuses on visual polish and better page flow. The new design features a modern space theme with interactive elements, smooth animations, and a responsive layout that works great on all devices. I've also improved the project showcase section to better highlight my work. Next update: improve loading speed and add more project deep-dives with detailed case studies and technical implementations.",
+        "image": "../icon.png"
     },
     {
         "title": "Building an Uptime Dashboard",
@@ -31,8 +29,7 @@
             "javascript"
         ],
         "excerpt": "Added a simple monitoring page for site and service health.",
-        "content": "The dashboard checks key endpoints every minute and supports manual refresh for quick troubleshooting.",
-        "image": "../voyage.png",
-        "fullContent": "I built an uptime dashboard to monitor the health and availability of my websites and services. The dashboard checks key endpoints every minute and provides real-time status updates. It features a clean interface with visual indicators for service status, response time monitoring, and historical uptime data. The system supports manual refresh for quick troubleshooting and sends alerts when services go down. Built with vanilla JavaScript and Bootstrap, it's lightweight and efficient."
+        "content": "I built an uptime dashboard to monitor the health and availability of my websites and services. The dashboard checks key endpoints every minute and provides real-time status updates. It features a clean interface with visual indicators for service status, response time monitoring, and historical uptime data. The system supports manual refresh for quick troubleshooting and sends alerts when services go down. Built with vanilla JavaScript and Bootstrap, it's lightweight and efficient.",
+        "image": "../voyage.png"
     }
 ]
