@@ -29,17 +29,96 @@ const {
       rel="stylesheet"
     />
 
-    <!-- Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <!-- Icons: FontAwesome SVG+JS (crisp inline SVGs, always render) -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/js/all.min.js"
+      crossorigin="anonymous"
+      data-auto-replace-svg="nest"
+    ></script>
 
     <link rel="icon" type="image/png" href="/icon.png" />
   </head>
   <body>
+    <div id="scroll-progress" aria-hidden="true"></div>
     <Navbar />
     <slot />
     <Footer />
+    <script>
+      // ---- Universal "super cool" layer: scroll progress, reveal, 3D tilt ----
+      (function () {
+        // Scroll progress bar
+        var bar = document.getElementById("scroll-progress");
+        if (bar) {
+          var onScroll = function () {
+            var h = document.documentElement;
+            var max = h.scrollHeight - h.clientHeight;
+            bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+          };
+          document.addEventListener("scroll", onScroll, { passive: true });
+          onScroll();
+        }
+
+        // Scroll reveal
+        var revealEls = document.querySelectorAll("[data-reveal], [data-reveal-group]");
+        if (revealEls.length && "IntersectionObserver" in window) {
+          var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+              if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); }
+            });
+          }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+          revealEls.forEach(function (el) { io.observe(el); });
+
+          // Reveal elements injected later (e.g. JS-rendered cards)
+          var mo = new MutationObserver(function () {
+            document.querySelectorAll("[data-reveal], [data-reveal-group]").forEach(function (el) {
+              if (!el.__revealObserved) { el.__revealObserved = 1; io.observe(el); }
+            });
+          });
+          mo.observe(document.body, { childList: true, subtree: true });
+        } else {
+          revealEls.forEach(function (el) { el.classList.add("is-in"); });
+          if (window.MutationObserver) {
+            var mo2 = new MutationObserver(function () {
+              document.querySelectorAll("[data-reveal], [data-reveal-group]").forEach(function (el) { el.classList.add("is-in"); });
+            });
+            mo2.observe(document.body, { childList: true, subtree: true });
+          }
+        }
+
+        // Parallax on floating icons
+        var floats = document.querySelectorAll(".float-icon.parallax, .cosmic-orb");
+        if (floats.length && "IntersectionObserver" in window) {
+          var last = 0;
+          document.addEventListener("scroll", function () {
+            var now = Date.now();
+            if (now - last < 60) return;
+            last = now;
+            var y = window.scrollY;
+            floats.forEach(function (el, i) {
+              var depth = (i % 3 + 1) * 0.12;
+              el.style.transform = "translateY(" + (y * depth) + "px)";
+            });
+          }, { passive: true });
+        }
+
+        // 3D tilt on mouse move
+        document.querySelectorAll(".tilt").forEach(function (card) {
+          if (card.classList.contains("flip-y")) return; // auto-rotating, no mouse tilt
+          card.addEventListener("mousemove", function (ev) {
+            var r = card.getBoundingClientRect();
+            var px = (ev.clientX - r.left) / r.width - 0.5;
+            var py = (ev.clientY - r.top) / r.height - 0.5;
+            card.style.transform = "rotateY(" + (px * 14) + "deg) rotateX(" + (-py * 14) + "deg)";
+          });
+          card.addEventListener("mouseleave", function () {
+            card.style.transform = "rotateY(0) rotateX(0)";
+          });
+        });
+
+        // Ensure SVG icons are replaced even if FA loads after paint
+        if (window.FontAwesome) window.FontAwesome.dom.i2svg();
+      })();
+    </script>
   </body>
+
 </html>

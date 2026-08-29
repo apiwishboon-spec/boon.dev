@@ -3,7 +3,7 @@ import Base from "../../layouts/Base.astro";
 ---
 <Base title="Blog | Boon" description="Updates, notes, and project progress.">
 
-  <header class="page-head">
+  <header class="page-head" data-reveal="down">
     <span class="kicker"><i class="fa-solid fa-star"></i> MISSION LOG FEED</span>
     <h1>From the <span class="grad-text">Mission Log</span></h1>
     <p>Updates, notes, and project progress.</p>
@@ -20,7 +20,7 @@ import Base from "../../layouts/Base.astro";
           <option value="all">All tags</option>
         </select>
       </div>
-      <div class="grid grid-3" id="posts"></div>
+      <div class="grid grid-3 tilt-wrap" id="posts" data-reveal-group></div>
     </div>
   </section>
 </Base>
@@ -47,12 +47,12 @@ import Base from "../../layouts/Base.astro";
       return;
     }
     wrap.innerHTML = filtered.map((p) => `
-      <a class="glass project-card" href="/blog/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;">
-        <div class="pc-icon"><i class="fa-solid fa-feather-pointed"></i></div>
-        <p style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin:0 0 8px;">${formatDate(p.date)}</p>
-        <h3 style="font-size:20px;">${escapeHtml(p.title)}</h3>
-        <p style="color:var(--text-muted);flex:1;">${escapeHtml(p.excerpt)}</p>
-        <div class="tagrow">${(p.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
+      <a class="glass project-card tilt flip-y" href="/blog/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;transform-style:preserve-3d;">
+        <div class="pc-icon lift"><i class="fa-solid fa-feather-pointed"></i></div>
+        <p class="lift" style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin:0 0 8px;">${formatDate(p.date)}</p>
+        <h3 class="lift" style="font-size:20px;">${escapeHtml(p.title)}</h3>
+        <p class="lift" style="color:var(--text-muted);flex:1;">${escapeHtml(p.excerpt)}</p>
+        <div class="tagrow lift">${(p.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
       </a>`).join("");
   }
 

@@ -5,18 +5,20 @@ import Base from "../layouts/Base.astro";
 
   <!-- ================= HERO / TITLE CARD ================= -->
   <header class="hero">
-    <span class="float-icon" style="top:18%; left:8%;"><i class="fa-solid fa-rocket"></i></span>
-    <span class="float-icon" style="top:26%; right:10%; animation-delay:1s;"><i class="fa-solid fa-atom"></i></span>
-    <span class="float-icon" style="bottom:24%; left:14%; animation-delay:2s;"><i class="fa-solid fa-dna"></i></span>
-    <span class="float-icon" style="bottom:30%; right:8%; animation-delay:.5s;"><i class="fa-solid fa-meteor"></i></span>
-    <span class="float-icon" style="top:58%; left:2%; animation-delay:3s;"><i class="fa-solid fa-flask"></i></span>
-    <span class="float-icon" style="top:60%; right:3%; animation-delay:1.5s;"><i class="fa-solid fa-microscope"></i></span>
+    <div class="cosmic-orb parallax" style="top:-120px; right:-80px;"></div>
+    <div class="cosmic-orb parallax" style="width:160px; height:160px; bottom:10%; left:-40px; opacity:.4;"></div>
+    <span class="float-icon parallax" style="top:18%; left:8%;"><i class="fa-solid fa-rocket"></i></span>
+    <span class="float-icon parallax" style="top:26%; right:10%; animation-delay:1s;"><i class="fa-solid fa-atom"></i></span>
+    <span class="float-icon parallax" style="bottom:24%; left:14%; animation-delay:2s;"><i class="fa-solid fa-dna"></i></span>
+    <span class="float-icon parallax" style="bottom:30%; right:8%; animation-delay:.5s;"><i class="fa-solid fa-meteor"></i></span>
+    <span class="float-icon parallax" style="top:58%; left:2%; animation-delay:3s;"><i class="fa-solid fa-flask"></i></span>
+    <span class="float-icon parallax" style="top:60%; right:3%; animation-delay:1.5s;"><i class="fa-solid fa-microscope"></i></span>
 
     <div style="position:relative; z-index:2;">
       <div class="kicker"><i class="fa-solid fa-star"></i> EST. BANGKOK &nbsp;·&nbsp; EARTH SECTOR <i class="fa-solid fa-star"></i></div>
-      <h1 id="hero-title">Future Scientist<br /><span class="grad-text">&amp; Developer</span></h1>
-      <p class="lead" id="hero-tagline"></p>
-      <div class="hero-actions">
+      <h1 id="hero-title" data-reveal="zoom">Future Scientist<br /><span class="grad-text">&amp; Developer</span></h1>
+      <p class="lead" id="hero-tagline" data-reveal="down"></p>
+      <div class="hero-actions" data-reveal="up">
         <a class="btn btn-primary" href="#story"><i class="fa-solid fa-book-open"></i> Read My Story</a>
         <a class="btn btn-ghost" href="/projects"><i class="fa-solid fa-arrow-pointer"></i> See the Work</a>
       </div>
@@ -27,14 +29,14 @@ import Base from "../layouts/Base.astro";
   <!-- ================= MARQUEE ================= -->
   <div class="marquee" aria-hidden="true">
     <div class="marquee-track">
-      <span><i class="fa-solid fa-code"></i>PYTHON</span><span><i class="fa-solid fa-brain"></i>AI</span><span><i class="fa-solid fa-flask"></i>SCIENCE</span><span><i class="fa-solid fa-planet-ringed"></i>ASTRONOMY</span><span><i class="fa-solid fa-dna"></i>BIOLOGY</span><span><i class="fa-solid fa-gears"></i>ENGINEERING</span><span><i class="fa-solid fa-chart-line"></i>DATA</span><span><i class="fa-solid fa-brain"></i>PSYCHOLOGY</span>
+      <span><i class="fa-solid fa-code"></i>PYTHON</span><span><i class="fa-solid fa-brain"></i>AI</span><span><i class="fa-solid fa-flask"></i>SCIENCE</span><span><i class="fa-solid fa-meteor"></i>ASTRONOMY</span><span><i class="fa-solid fa-dna"></i>BIOLOGY</span><span><i class="fa-solid fa-gears"></i>ENGINEERING</span><span><i class="fa-solid fa-chart-line"></i>DATA</span><span><i class="fa-solid fa-brain"></i>PSYCHOLOGY</span>
     </div>
   </div>
 
   <!-- ================= CHAPTER I : THE BEGINNING ================= -->
   <section id="story" class="section">
     <div class="container">
-      <div class="chapter">
+      <div class="chapter" data-reveal>
         <div class="chapter-num">Chapter 01 — The Beginning</div>
         <h2>Every constellation <em>starts with a spark.</em></h2>
         <p class="lede" id="about-text">
@@ -42,9 +44,9 @@ import Base from "../layouts/Base.astro";
         </p>
       </div>
 
-      <div class="timeline" id="timeline"></div>
+      <div class="timeline" id="timeline" data-reveal-group></div>
 
-      <div class="quote-block glass" style="padding:60px 30px; margin-top:30px;">
+      <div class="quote-block glass" style="padding:60px 30px; margin-top:30px;" data-reveal="zoom">
         <span class="qmark">&ldquo;</span>
         <blockquote>Coding is not just about communicating with computers &mdash; it's about communicating with the future.</blockquote>
       </div>
@@ -54,15 +56,15 @@ import Base from "../layouts/Base.astro";
   <!-- ================= CHAPTER II : THE WORK ================= -->
   <section class="section" style="background: linear-gradient(180deg, transparent, rgba(122,168,255,.06), transparent);">
     <div class="container">
-      <div class="chapter">
+      <div class="chapter" data-reveal>
         <div class="chapter-num">Chapter 02 — The Work</div>
         <h2>Missions, <em>launched from the lab.</em></h2>
         <p class="lede">A rotating deck of flagship builds &mdash; each one a small machine solving a real-world problem.</p>
       </div>
 
-      <div class="grid grid-2" id="projects"></div>
+      <div class="grid grid-2 tilt-wrap" id="projects"></div>
 
-      <div class="text-center mt-3">
+      <div class="text-center mt-3" data-reveal>
         <a class="btn btn-ghost" href="/projects"><i class="fa-solid fa-arrow-right-long"></i> See All Projects</a>
       </div>
     </div>
@@ -71,13 +73,13 @@ import Base from "../layouts/Base.astro";
   <!-- ================= CHAPTER III : HONORS ================= -->
   <section class="section">
     <div class="container">
-      <div class="chapter text-center">
+      <div class="chapter text-center" data-reveal>
         <div class="chapter-num" style="justify-content:center;">Chapter 03 — The Trophy Shelf</div>
         <h2>Proof, <em>in starlight.</em></h2>
         <p class="lede" style="margin:0 auto;">Competitions, certificates, and milestones earned along the way.</p>
       </div>
       <div class="honor-grid" id="honors"></div>
-      <div class="text-center mt-3">
+      <div class="text-center mt-3" data-reveal>
         <a class="btn btn-ghost" href="/honors"><i class="fa-solid fa-trophy"></i> View Full Archive</a>
       </div>
     </div>
@@ -86,13 +88,13 @@ import Base from "../layouts/Base.astro";
   <!-- ================= CHAPTER IV : THE ARSENAL ================= -->
   <section class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,.06), transparent);">
     <div class="container text-center">
-      <div class="chapter">
+      <div class="chapter" data-reveal>
         <div class="chapter-num" style="justify-content:center;">Chapter 04 — The Arsenal</div>
         <h2>Tools of the <em>trade.</em></h2>
       </div>
-      <div class="flex flex-wrap gap-3 center" id="skills"></div>
+      <div class="flex flex-wrap gap-3 center" id="skills" data-reveal-group></div>
 
-      <div class="grid grid-4 mt-3" id="stats">
+      <div class="grid grid-4 mt-3" id="stats" data-reveal-group>
         <div class="stat"><div class="num" data-count="6">0</div><div class="label"><i class="fa-solid fa-flask"></i> Years of Science</div></div>
         <div class="stat"><div class="num" data-count="3">0</div><div class="label"><i class="fa-solid fa-code"></i> Major Projects</div></div>
         <div class="stat"><div class="num" data-count="2">0</div><div class="label"><i class="fa-solid fa-trophy"></i> Honors Won</div></div>
@@ -104,12 +106,12 @@ import Base from "../layouts/Base.astro";
   <!-- ================= CHAPTER V : THE STORY CONTINUES ================= -->
   <section class="section">
     <div class="container text-center">
-      <div class="chapter">
+      <div class="chapter" data-reveal>
         <div class="chapter-num" style="justify-content:center;">Chapter 05 — The Story Continues</div>
         <h2>From the <em>mission log.</em></h2>
       </div>
-      <div class="grid grid-3" id="posts"></div>
-      <div class="text-center mt-3">
+      <div class="grid grid-3 tilt-wrap" id="posts"></div>
+      <div class="text-center mt-3" data-reveal>
         <a class="btn btn-primary" href="/blog"><i class="fa-solid fa-feather-pointed"></i> Read the Blog</a>
       </div>
     </div>
@@ -118,7 +120,7 @@ import Base from "../layouts/Base.astro";
   <!-- ================= FINALE / CTA ================= -->
   <section class="section pb-6" style="padding-bottom:140px;">
     <div class="container text-center">
-      <div class="quote-block">
+      <div class="quote-block" data-reveal="zoom">
         <span class="qmark">&ldquo;</span>
         <h2 style="font-size:clamp(34px,5vw,58px);" id="contact-heading">Let's Build the Future</h2>
         <p class="lede" style="margin:0 auto 30px;" id="contact-subtext"></p>
@@ -163,11 +165,11 @@ import Base from "../layouts/Base.astro";
     if (projects) {
       const featured = (data.projects.filter(p => p.featured).length ? data.projects.filter(p => p.featured) : data.projects).slice(0, 4);
       projects.innerHTML = featured.map((p) => `
-        <a class="glass project-card" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;">
-          <div class="pc-icon"><i class="fa-solid ${p.tech?.includes("AI") ? "fa-robot" : p.tech?.includes("macOS") || p.tech?.includes("Automation") ? "fa-gears" : "fa-code"}"></i></div>
-          <h3>${escapeHtml(p.title)}</h3>
-          <p>${escapeHtml(p.tagline || p.description)}</p>
-          <div class="tagrow">${(p.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
+        <a class="glass project-card tilt flip-y" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;transform-style:preserve-3d;">
+          <div class="pc-icon lift"><i class="fa-solid ${p.tech?.includes("AI") ? "fa-robot" : p.tech?.includes("macOS") || p.tech?.includes("Automation") ? "fa-gears" : "fa-code"}"></i></div>
+          <h3 class="lift">${escapeHtml(p.title)}</h3>
+          <p class="lift">${escapeHtml(p.tagline || p.description)}</p>
+          <div class="tagrow lift">${(p.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
         </a>`).join("");
     }
 
@@ -178,11 +180,11 @@ import Base from "../layouts/Base.astro";
       honors.classList.add("grid-3");
       honors.style.marginTop = "40px";
       honors.innerHTML = data.honors.slice(0, 3).map((h) => `
-        <div class="glass honor-card">
+        <div class="glass honor-card tilt flip-y">
           ${h.image_url ? `<img src="${escapeHtml(h.image_url)}" alt="${escapeHtml(h.alt)}" loading="lazy" />` : `<div class="h-icon"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-medal")}"></i></div>`}
-          <span class="chip" style="margin-bottom:10px;"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-star")}"></i>${escapeHtml(h.badge_label)}</span>
-          <h3>${escapeHtml(h.title)}</h3>
-          <p>${escapeHtml(h.description)}</p>
+          <span class="chip lift" style="margin-bottom:10px;"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-star")}"></i>${escapeHtml(h.badge_label)}</span>
+          <h3 class="lift">${escapeHtml(h.title)}</h3>
+          <p class="lift">${escapeHtml(h.description)}</p>
         </div>`).join("");
     }
 
@@ -213,12 +215,12 @@ import Base from "../layouts/Base.astro";
     const posts = document.getElementById("posts");
     if (posts) {
       posts.innerHTML = data.posts.slice(0, 3).map((post) => `
-        <a class="glass" href="/blog/${encodeURIComponent(post.slug)}" style="color:inherit;text-decoration:none;display:flex;flex-direction:column;">
-          <div class="pc-icon"><i class="fa-solid fa-feather-pointed"></i></div>
-          <p style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin:0 0 8px;">${formatDate(post.date)}</p>
-          <h3 style="font-size:20px;">${escapeHtml(post.title)}</h3>
-          <p style="color:var(--text-muted);flex:1;">${escapeHtml(post.excerpt)}</p>
-          <div class="tagrow">${(post.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
+        <a class="glass tilt flip-y" href="/blog/${encodeURIComponent(post.slug)}" style="color:inherit;text-decoration:none;display:flex;flex-direction:column;transform-style:preserve-3d;">
+          <div class="pc-icon lift"><i class="fa-solid fa-feather-pointed"></i></div>
+          <p class="lift" style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin:0 0 8px;">${formatDate(post.date)}</p>
+          <h3 class="lift" style="font-size:20px;">${escapeHtml(post.title)}</h3>
+          <p class="lift" style="color:var(--text-muted);flex:1;">${escapeHtml(post.excerpt)}</p>
+          <div class="tagrow lift">${(post.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
         </a>`).join("");
     }
 

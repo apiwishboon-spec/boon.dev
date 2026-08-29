@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 ---
 <Base title="Honors | Boon" description="Hall of Fame — competitions, certificates, and milestones.">
 
-  <header class="page-head">
+  <header class="page-head" data-reveal="down">
     <span class="kicker"><i class="fa-solid fa-star"></i> HALL OF FAME</span>
     <h1>The <span class="grad-text">Trophy Shelf</span></h1>
     <p>Competitions, certificates, and milestones earned along the way.</p>
@@ -11,7 +11,7 @@ import Base from "../layouts/Base.astro";
 
   <section class="section">
     <div class="container">
-      <div class="grid grid-3" id="honors" style="margin-top:20px;"></div>
+      <div class="grid grid-3" id="honors" style="margin-top:20px;" data-reveal-group></div>
     </div>
   </section>
 </Base>
@@ -24,11 +24,11 @@ import Base from "../layouts/Base.astro";
     const wrap = document.getElementById("honors");
     if (!wrap) return;
     wrap.innerHTML = data.honors.map((h) => `
-      <div class="glass honor-card">
+      <div class="glass honor-card tilt flip-y">
         ${h.image_url ? `<img src="${escapeHtml(h.image_url)}" alt="${escapeHtml(h.alt)}" loading="lazy" />` : `<div class="h-icon"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-medal")}"></i></div>`}
-        <span class="chip" style="margin-bottom:10px;"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-star")}"></i>${escapeHtml(h.badge_label)}</span>
-        <h3>${escapeHtml(h.title)}</h3>
-        <p>${escapeHtml(h.description)}</p>
+        <span class="chip lift" style="margin-bottom:10px;"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-star")}"></i>${escapeHtml(h.badge_label)}</span>
+        <h3 class="lift">${escapeHtml(h.title)}</h3>
+        <p class="lift">${escapeHtml(h.description)}</p>
       </div>`).join("");
   });
 </script>

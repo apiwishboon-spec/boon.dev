@@ -3,7 +3,7 @@ import Base from "../layouts/Base.astro";
 ---
 <Base title="About | Boon" description="About Apiwish (Boon) — my journey and skills.">
 
-  <header class="page-head">
+  <header class="page-head" data-reveal="down">
     <span class="kicker"><i class="fa-solid fa-star"></i> THE OPERATOR</span>
     <h1>The Story <span class="grad-text">So Far</span></h1>
     <p id="about-text"></p>
@@ -11,21 +11,21 @@ import Base from "../layouts/Base.astro";
 
   <section class="section">
     <div class="container">
-      <div class="chapter">
+      <div class="chapter" data-reveal>
         <div class="chapter-num">Origin</div>
         <h2>Every constellation <em>starts with a spark.</em></h2>
       </div>
-      <div class="timeline" id="timeline"></div>
+      <div class="timeline" id="timeline" data-reveal-group></div>
     </div>
   </section>
 
   <section class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,.06), transparent);">
     <div class="container text-center">
-      <div class="chapter">
+      <div class="chapter" data-reveal>
         <div class="chapter-num" style="justify-content:center;">The Arsenal</div>
         <h2>Tools of the <em>trade.</em></h2>
       </div>
-      <div class="flex flex-wrap gap-3 center" id="skills"></div>
+      <div class="flex flex-wrap gap-3 center" id="skills" data-reveal-group></div>
     </div>
   </section>
 </Base>

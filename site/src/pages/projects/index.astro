@@ -3,7 +3,7 @@ import Base from "../../layouts/Base.astro";
 ---
 <Base title="Projects | Boon" description="Selected work and experiments by Boon.">
 
-  <header class="page-head">
+  <header class="page-head" data-reveal="down">
     <span class="kicker"><i class="fa-solid fa-star"></i> MISSION LOG</span>
     <h1>The <span class="grad-text">Work</span></h1>
     <p>Selected missions launched from the lab.</p>
@@ -11,7 +11,7 @@ import Base from "../../layouts/Base.astro";
 
   <section class="section">
     <div class="container">
-      <div class="grid grid-2" id="projects"></div>
+      <div class="grid grid-2 tilt-wrap" id="projects" data-reveal-group></div>
     </div>
   </section>
 </Base>
@@ -24,11 +24,11 @@ import Base from "../../layouts/Base.astro";
     const wrap = document.getElementById("projects");
     if (!wrap) return;
     wrap.innerHTML = data.projects.map((p) => `
-      <a class="glass project-card" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;">
-        <div class="pc-icon"><i class="fa-solid ${p.tech?.includes("AI") ? "fa-robot" : "fa-gears"}"></i></div>
-        <h3>${escapeHtml(p.title)}</h3>
-        <p>${escapeHtml(p.tagline || p.description)}</p>
-        <div class="tagrow">${(p.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
+      <a class="glass project-card tilt flip-y" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;transform-style:preserve-3d;">
+        <div class="pc-icon lift"><i class="fa-solid ${p.tech?.includes("AI") ? "fa-robot" : "fa-gears"}"></i></div>
+        <h3 class="lift">${escapeHtml(p.title)}</h3>
+        <p class="lift">${escapeHtml(p.tagline || p.description)}</p>
+        <div class="tagrow lift">${(p.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
       </a>`).join("");
   });
 </script>

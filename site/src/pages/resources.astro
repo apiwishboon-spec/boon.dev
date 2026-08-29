@@ -59,7 +59,7 @@ import Base from "../layouts/Base.astro";
             </div>`
         );
         return `
-          <section style="margin-bottom: var(--space-xl);">
+          <section style="margin-bottom: var(--space-xl);" data-reveal="left">
             <h2 style="display:flex;align-items:center;gap:10px;"><span class="chip"><i class="fa-solid fa-folder"></i></span> ${escapeHtml(cat)}</h2>
             <div class="resource-grid">${items.join("")}</div>
           </section>`;
