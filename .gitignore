@@ -3,3 +3,23 @@
 .vscode
 *.log
 templates/
+
+# Node / build artifacts
+node_modules/
+dist/
+site/dist/
+admin/dist/
+site/.astro/
+
+# Environment files (never commit real keys)
+.env
+.env.local
+.env.production
+site/.env
+site/.env.production
+admin/.env
+admin/.env.local
+
+# Supabase generated
+supabase/.temp/
+

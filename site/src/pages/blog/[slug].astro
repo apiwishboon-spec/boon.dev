@@ -1,0 +1,61 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getClient, isConfigured } from "../../lib/supabase";
+import { demoData } from "../../lib/demo";
+
+export async function getStaticPaths() {
+  const sb = getClient();
+  let posts = demoData.posts;
+  if (sb && isConfigured()) {
+    try {
+      const { data } = await sb.from("blog_posts").select("slug,title");
+      if (data && data.length) posts = data;
+    } catch {
+      /* fallback */
+    }
+  }
+  return posts.map((p) => ({ params: { slug: p.slug }, props: { title: p.title } }));
+}
+
+const { slug } = Astro.params;
+const { title } = Astro.props;
+---
+<Base title={`${title} | Blog`} description={`Blog post: ${title}`}>
+
+  <section class="section">
+    <div class="container" style="max-width: 760px;">
+      <a class="btn btn-secondary btn-sm" href="/blog">← All Posts</a>
+      <div id="post" style="margin-top: var(--space-lg);"></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../../lib/site-loader";
+  import { renderMarkdown, formatDate } from "../../lib/format";
+  import type { AllData } from "../../lib/types";
+
+  const slug = new URL(location.href).pathname.split("/").filter(Boolean).pop() || "unknown";
+
+  bootSite((data: AllData) => {
+    const post = data.posts.find((p) => p.slug === slug);
+    const wrap = document.getElementById("post");
+    if (!wrap) return;
+
+    if (!post) {
+      wrap.innerHTML = `<div class="text-center"><h2>Post not found</h2><a class="btn btn-secondary mt-2" href="/blog">Back to blog</a></div>`;
+      return;
+    }
+
+    wrap.innerHTML = `
+      <p class="muted" style="font-size:14px;">${formatDate(post.date)}</p>
+      <h1>${escapeHtml(post.title)}</h1>
+      <div class="flex flex-wrap gap-2 mt-2">${
+        (post.tags || []).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
+      }</div>
+      ${post.image_url ? `<div class="card-img" style="margin-top: var(--space-lg);"><img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" /></div>` : ""}
+      <div class="prose" style="margin-top: var(--space-lg);">${renderMarkdown(post.body)}</div>
+    `;
+    document.title = (data.config.brand ? data.config.brand + " | " : "") + post.title;
+  });
+</script>

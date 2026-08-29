@@ -1,0 +1,84 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Resources | Boon" description="Curated file resources, downloads, and teaching materials.">
+
+  <header class="page-head">
+    <h1>File Resources</h1>
+    <p class="lead muted">Download curated guides, materials, and more.</p>
+  </header>
+
+  <section class="section">
+    <div class="container" id="resources"></div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../lib/site-loader";
+  import type { AllData } from "../lib/types";
+
+  bootSite((data: AllData) => {
+    const wrap = document.getElementById("resources");
+    if (!wrap) return;
+
+    // Group resources by category, preserving insertion order.
+    const order: string[] = [];
+    const groups = new Map<string, typeof data.resources>();
+    for (const r of data.resources) {
+      if (!groups.has(r.category)) {
+        groups.set(r.category, []);
+        order.push(r.category);
+      }
+      groups.get(r.category)!.push(r);
+    }
+
+    wrap.innerHTML = order
+      .map((cat) => {
+        const items = groups.get(cat)!.map(
+          (r) => `
+            <div class="card" style="display:flex;flex-direction:column;">
+              ${r.preview_url ? `<div class="card-img text-center"><img src="${escapeHtml(r.preview_url)}" alt="${escapeHtml(r.title)}" loading="lazy" style="max-height:120px;margin:0 auto;" /></div>` : `<div class="card-img text-center"><div class="chip" style="margin:auto;">${escapeHtml(r.file_type)}</div></div>`}
+              <h3 class="mt-1">${escapeHtml(r.title)}</h3>
+              <p class="muted" style="flex:1;">${escapeHtml(r.description)}</p>
+              <div class="flex flex-wrap gap-2 mt-1">
+                ${r.file_type ? `<span class="badge">${escapeHtml(r.file_type)}</span>` : ""}
+                ${r.file_size ? `<span class="badge">${escapeHtml(r.file_size)}</span>` : ""}
+                ${r.protected ? `<span class="badge" style="background:var(--tertiary-soft);color:var(--on-surface);"><i class="fa-solid fa-lock"></i> Protected</span>` : ""}
+              </div>
+              <div class="mt-2">
+                ${
+                  r.protected
+                    ? `<button class="btn btn-secondary btn-block" data-protected data-title="${escapeHtml(r.title)}" data-file="${escapeHtml(r.file_url)}">
+                        <i class="fa-solid fa-lock"></i> Download with Password
+                      </button>`
+                    : r.file_url
+                    ? `<a class="btn btn-primary btn-block" href="${escapeHtml(r.file_url)}" download><i class="fa-solid fa-download"></i> Download</a>`
+                    : `<button class="btn btn-secondary btn-block" disabled>Coming Soon</button>`
+                }
+              </div>
+            </div>`
+        );
+        return `
+          <section style="margin-bottom: var(--space-xl);">
+            <h2 style="display:flex;align-items:center;gap:10px;"><span class="chip"><i class="fa-solid fa-folder"></i></span> ${escapeHtml(cat)}</h2>
+            <div class="resource-grid">${items.join("")}</div>
+          </section>`;
+      })
+      .join("");
+
+    wrap.querySelectorAll<HTMLButtonElement>("[data-protected]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const title = btn.dataset.title || "resource";
+        const file = btn.dataset.file || "";
+        const pin = prompt(`This resource is protected.\nEnter the password to download "${title}":`);
+        if (pin === null) return;
+        // NOTE: real password check should be server-side via an Edge Function.
+        // This default accepts any non-empty password for demo purposes.
+        if (pin.trim()) {
+          if (file) window.location.href = file;
+          else alert("File URL not set for this resource.");
+        }
+      });
+    });
+  });
+</script>

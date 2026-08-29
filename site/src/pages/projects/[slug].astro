@@ -1,0 +1,82 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getClient, isConfigured } from "../../lib/supabase";
+import { demoData } from "../../lib/demo";
+import { renderMarkdown } from "../../lib/format";
+
+export async function getStaticPaths() {
+  const sb = getClient();
+  let projects = demoData.projects;
+  if (sb && isConfigured()) {
+    try {
+      const { data } = await sb.from("projects").select("slug,title");
+      if (data && data.length) {
+        projects = data;
+      }
+    } catch {
+      /* fallback */
+    }
+  }
+  return projects.map((p) => ({
+    params: { slug: p.slug },
+    props: { title: p.title },
+  }));
+}
+
+const { slug } = Astro.params;
+const { title } = Astro.props;
+---
+<Base title={`${title} | Projects`} description={`Project: ${title}`}>
+
+  <section class="section">
+    <div class="container">
+      <a class="btn btn-secondary btn-sm" href="/projects">← All Projects</a>
+
+      <div id="project" class="card" style="margin-top: var(--space-lg); padding: var(--space-lg);">
+        <div class="loading">Loading…</div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../../lib/site-loader";
+  import { renderMarkdown } from "../../lib/format";
+  import type { AllData } from "../../lib/types";
+
+  // The slug is known statically; project data loads live from CMS.
+  // Read current slug from the URL to be safe when deployed at a subpath.
+  const slugPath = new URL(location.href).pathname;
+  const slug = slugPath.split("/").filter(Boolean).pop() || "unknown";
+
+  bootSite((data: AllData) => {
+    const project = data.projects.find((p) => p.slug === slug);
+    const wrap = document.getElementById("project");
+    if (!wrap) return;
+
+    if (!project) {
+      wrap.innerHTML = `<div class="text-center"><h2>Project not found</h2><a class="btn btn-secondary mt-2" href="/projects">Back to projects</a></div>`;
+      return;
+    }
+
+    wrap.innerHTML = `
+      <h1>${escapeHtml(project.title)}</h1>
+      <p class="lead muted">${escapeHtml(project.tagline || project.description)}</p>
+      ${
+        project.cover_url
+          ? `<div class="card-img" style="max-width:560px"><img src="${escapeHtml(project.cover_url)}" alt="${escapeHtml(project.title)}" /></div>`
+          : ""
+      }
+      <div class="flex flex-wrap gap-2 mt-2">${
+        (project.tech || []).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
+      }</div>
+      <div class="flex gap-2 mt-3">
+        ${project.live_url ? `<a class="btn btn-primary" href="${escapeHtml(project.live_url)}" target="_blank" rel="noopener">Live Demo</a>` : ""}
+        ${project.github_url ? `<a class="btn btn-secondary" href="${escapeHtml(project.github_url)}" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Source</a>` : ""}
+      </div>
+      <hr />
+      <div class="prose">${renderMarkdown(project.body)}</div>
+    `;
+    document.title = (data.config.brand ? data.config.brand + " | " : "") + project.title;
+  });
+</script>

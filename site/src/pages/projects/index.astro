@@ -1,0 +1,39 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+<Base title="Projects | Boon" description="Featured projects by Apiwish (Boon).">
+
+  <header class="page-head">
+    <h1>Projects</h1>
+    <p class="lead muted">Selected work and experiments.</p>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2" id="projects"></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../../lib/site-loader";
+  import type { AllData } from "../../lib/types";
+
+  bootSite((data: AllData) => {
+    const wrap = document.getElementById("projects");
+    if (!wrap) return;
+    wrap.innerHTML = data.projects
+      .map(
+        (p) => `
+          <a class="card" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit">
+            ${p.cover_url ? `<div class="card-img"><img src="${escapeHtml(p.cover_url)}" alt="${escapeHtml(p.title)}" loading="lazy" /></div>` : ""}
+            <h3 class="mt-1">${escapeHtml(p.title)}</h3>
+            <p class="muted">${escapeHtml(p.tagline || p.description)}</p>
+            <div class="flex flex-wrap gap-2 mt-1">${
+              (p.tech || []).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
+            }</div>
+          </a>`
+      )
+      .join("");
+  });
+</script>

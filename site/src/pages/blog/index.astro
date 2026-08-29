@@ -1,0 +1,81 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+<Base title="Blog | Boon" description="Updates, notes, and project progress.">
+
+  <header class="page-head">
+    <h1>Blog</h1>
+    <p class="lead muted">Updates, notes, and project progress.</p>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="flex flex-wrap gap-2 mb-3" style="align-items:center; gap: 10px;">
+        <input
+          id="search-input"
+          type="search"
+          class="search-input"
+          placeholder="Search posts…"
+          style="flex:1 1 240px; padding:10px 16px; border:1px solid var(--border); border-radius:var(--radius-full); font-size:14px; background:var(--surface);"
+        />
+        <select id="tag-filter" class="tag-filter" style="padding:10px 16px; border:1px solid var(--border); border-radius:var(--radius-full); font-size:14px; background:var(--surface);">
+          <option value="all">All tags</option>
+        </select>
+      </div>
+      <div class="grid grid-3" id="posts" style="margin-top: var(--space-lg);"></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../../lib/site-loader";
+  import { formatDate } from "../../lib/format";
+  import type { AllData, BlogPost } from "../../lib/types";
+
+  let posts: BlogPost[] = [];
+
+  function render() {
+    const query = (document.getElementById("search-input") as HTMLInputElement).value.trim().toLowerCase();
+    const tag = (document.getElementById("tag-filter") as HTMLSelectElement).value;
+    const filtered = posts.filter((p) => {
+      const matchTag = tag === "all" || (p.tags || []).includes(tag);
+      const body = `${p.title} ${p.excerpt} ${p.body} ${(p.tags || []).join(" ")}`.toLowerCase();
+      const matchSearch = query.length === 0 || body.includes(query);
+      return matchTag && matchSearch;
+    });
+    const wrap = document.getElementById("posts");
+    if (!wrap) return;
+
+    if (!filtered.length) {
+      wrap.innerHTML = `<div class="card text-center" style="grid-column:1/-1"><p class="muted mb-0">No posts match your search.</p></div>`;
+      return;
+    }
+    wrap.innerHTML = filtered
+      .map(
+        (p) => `
+          <a class="card" href="/blog/${encodeURIComponent(p.slug)}" style="color:inherit">
+            ${p.image_url ? `<div class="card-img"><img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.title)}" loading="lazy" style="max-height:180px;width:100%;object-fit:cover;"/></div>` : ""}
+            <p class="muted" style="font-size:13px;margin-bottom:4px;">${formatDate(p.date)}</p>
+            <h3 class="mt-1">${escapeHtml(p.title)}</h3>
+            <p class="muted">${escapeHtml(p.excerpt)}</p>
+            <div class="flex flex-wrap gap-2 mt-1">${
+              (p.tags || []).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
+            }</div>
+          </a>`
+      )
+      .join("");
+  }
+
+  bootSite((data: AllData) => {
+    posts = data.posts;
+
+    const tagFilter = document.getElementById("tag-filter") as HTMLSelectElement;
+    const allTags = [...new Set(posts.flatMap((p) => p.tags || []))].sort();
+    tagFilter.innerHTML = '<option value="all">All tags</option>' +
+      allTags.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+
+    document.getElementById("search-input")?.addEventListener("input", render);
+    tagFilter.addEventListener("change", render);
+    render();
+  });
+</script>

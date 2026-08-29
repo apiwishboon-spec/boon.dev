@@ -1,0 +1,37 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Honors | Boon" description="Hall of Fame — competitions, certificates, and milestones.">
+
+  <header class="page-head">
+    <h1>Hall of Fame</h1>
+    <p class="lead muted">Competitions, Certificates, and Milestones.</p>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="honor-grid" id="honors"></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../lib/site-loader";
+  import type { AllData } from "../lib/types";
+
+  bootSite((data: AllData) => {
+    const wrap = document.getElementById("honors");
+    if (!wrap) return;
+    wrap.innerHTML = data.honors
+      .map(
+        (h) => `
+          <div class="honor-card">
+            ${h.image_url ? `<img src="${escapeHtml(h.image_url)}" alt="${escapeHtml(h.alt)}" loading="lazy" style="margin-bottom:var(--space-sm);" />` : ""}
+            <span class="badge" title="${escapeHtml(h.badge_title)}">${h.badge_icon ? `<i class="${escapeHtml(h.badge_icon)}"></i>` : ""} ${escapeHtml(h.badge_label)}</span>
+            <h3 class="mt-2">${escapeHtml(h.title)}</h3>
+            <p class="muted">${escapeHtml(h.description)}</p>
+          </div>`
+      )
+      .join("");
+  });
+</script>

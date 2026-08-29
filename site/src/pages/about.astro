@@ -1,0 +1,55 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="About | Boon" description="About Apiwish (Boon) — my journey, timeline, and skills.">
+
+  <header class="page-head">
+    <h1>About</h1>
+    <p class="lead muted" id="about-text"></p>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <h2>My Journey</h2>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--surface);">
+    <div class="container">
+      <h2>Technical Arsenal</h2>
+      <div class="flex flex-wrap gap-2" id="skills"></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../lib/site-loader";
+  import type { AllData } from "../lib/types";
+
+  bootSite((data: AllData) => {
+    const about = document.getElementById("about-text");
+    if (about) about.textContent = data.config.about;
+
+    const tl = document.getElementById("timeline");
+    if (tl) {
+      tl.innerHTML = data.timeline
+        .map(
+          (m) => `
+            <div class="tl-node ${m.is_current ? "current" : ""}">
+              <div class="tl-period">${escapeHtml(m.period_label)}</div>
+              <h3 class="mt-1">${escapeHtml(m.title)}</h3>
+              <p class="muted">${escapeHtml(m.description)}</p>
+            </div>`
+        )
+        .join("");
+    }
+
+    const skills = document.getElementById("skills");
+    if (skills) {
+      skills.innerHTML = data.skills
+        .map((s) => `<span class="badge">${escapeHtml(s.label)}</span>`)
+        .join(" ");
+    }
+  });
+</script>

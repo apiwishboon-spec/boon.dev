@@ -1,0 +1,148 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Home | Boon" description="Portfolio of Apiwish (Boon) — Future Scientist & Developer.">
+
+  <!-- HERO -->
+  <header class="hero">
+    <h1 id="hero-title"></h1>
+    <p class="lead" id="hero-tagline"></p>
+    <a class="btn btn-primary btn-lg" href="/projects">View My Projects</a>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <!-- About / timeline -->
+      <div class="grid grid-2">
+        <div class="card">
+          <h2>My Journey</h2>
+          <div class="timeline" id="timeline"></div>
+        </div>
+        <div class="card">
+          <h2>About</h2>
+          <p class="muted" id="about-text"></p>
+        </div>
+      </div>
+
+      <h2 class="mt-4">Featured Projects</h2>
+      <div class="grid grid-3" id="projects"></div>
+      <div class="text-center mt-3">
+        <a class="btn btn-secondary" href="/projects">All Projects</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--surface);">
+    <div class="container text-center">
+      <h2>Recent Honors</h2>
+      <div class="honor-grid" id="honors"></div>
+      <a class="btn btn-secondary mt-2" href="/honors">View Full Archive</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container text-center">
+      <h2>Technical Arsenal</h2>
+      <div class="flex flex-wrap justify-center gap-2" id="skills"></div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--surface);">
+    <div class="container text-center">
+      <h2>From My Blog</h2>
+      <a class="btn btn-secondary mt-2" href="/blog">Read the Blog</a>
+    </div>
+  </section>
+
+  <section class="section text-center">
+    <div class="container">
+      <h2 id="contact-heading"></h2>
+      <p class="lead muted" id="contact-subtext"></p>
+      <a class="btn btn-primary btn-lg" id="contact-email" href="#">Get in Touch</a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { bootSite, escapeHtml } from "../lib/site-loader";
+  import type { AllData } from "../lib/types";
+
+  bootSite((data: AllData) => {
+    const cfg = data.config;
+
+    const heroTitle = document.getElementById("hero-title");
+    if (heroTitle) {
+      heroTitle.innerHTML = `Future <span class="accent">Scientist</span> &amp; Developer`;
+    }
+    const tagline = document.getElementById("hero-tagline");
+    if (tagline) tagline.textContent = cfg.tagline;
+
+    // Timeline
+    const tl = document.getElementById("timeline");
+    if (tl) {
+      tl.innerHTML = data.timeline
+        .map(
+          (m) => `
+            <div class="tl-node ${m.is_current ? "current" : ""}">
+              <div class="tl-period">${escapeHtml(m.period_label)}</div>
+              <h3 class="mt-1">${escapeHtml(m.title)}</h3>
+              <p class="muted">${escapeHtml(m.description)}</p>
+            </div>`
+        )
+        .join("");
+    }
+
+    const about = document.getElementById("about-text");
+    if (about) about.textContent = cfg.about;
+
+    const projects = document.getElementById("projects");
+    if (projects) {
+      const featured = data.projects.filter((p) => p.featured).slice(0, 3);
+      projects.innerHTML = featured
+        .map(
+          (p) => `
+            <a class="card" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit">
+              ${p.cover_url ? `<div class="card-img"><img src="${escapeHtml(p.cover_url)}" alt="${escapeHtml(p.title)}" loading="lazy" /></div>` : ""}
+              <h3 class="mt-1">${escapeHtml(p.title)}</h3>
+              <p class="muted">${escapeHtml(p.tagline || p.description)}</p>
+              <div class="flex flex-wrap gap-2 mt-1">${
+                (p.tech || []).slice(0, 3).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
+              }</div>
+            </a>`
+        )
+        .join("");
+    }
+
+    const honors = document.getElementById("honors");
+    if (honors) {
+      honors.innerHTML = data.honors.slice(0, 3)
+        .map(
+          (h) => `
+            <div class="honor-card">
+              ${h.image_url ? `<img src="${escapeHtml(h.image_url)}" alt="${escapeHtml(h.alt)}" loading="lazy" />` : ""}
+              <h3 class="mt-2">${escapeHtml(h.title)}</h3>
+              <p class="muted">${escapeHtml(h.description)}</p>
+              <span class="badge">${escapeHtml(h.badge_label)}</span>
+            </div>`
+        )
+        .join("");
+    }
+
+    const skills = document.getElementById("skills");
+    if (skills) {
+      skills.innerHTML = data.skills
+        .map((s) => `<span class="badge">${escapeHtml(s.label)}</span>`)
+        .join(" ");
+    }
+
+    const contactHeading = document.getElementById("contact-heading");
+    if (contactHeading) contactHeading.textContent = cfg.contact_heading;
+    const contactSub = document.getElementById("contact-subtext");
+    if (contactSub) contactSub.textContent = cfg.contact_subtext;
+    const emailLink = document.getElementById("contact-email");
+    const email = cfg.socials.find((s) => s.type === "email");
+    if (emailLink && email) emailLink.href = email.url;
+
+    document.title = (cfg.brand ? cfg.brand + " | " : "") + "Home";
+  });
+</script>
