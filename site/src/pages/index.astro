@@ -1,12 +1,12 @@
 ---
 import Base from "../layouts/Base.astro";
+import WebGLBackground from "../components/WebGLBackground.astro";
 ---
 <Base title="Home | Boon" description="Boon — future scientist & developer. A story told in code, science, and stardust.">
 
   <!-- ================= HERO / TITLE CARD ================= -->
   <header class="hero">
-    <div class="cosmic-orb parallax" style="top:-120px; right:-80px;"></div>
-    <div class="cosmic-orb parallax" style="width:160px; height:160px; bottom:10%; left:-40px; opacity:.4;"></div>
+    <WebGLBackground />
     <span class="float-icon parallax" style="top:18%; left:8%;"><i class="fa-solid fa-rocket"></i></span>
     <span class="float-icon parallax" style="top:26%; right:10%; animation-delay:1s;"><i class="fa-solid fa-atom"></i></span>
     <span class="float-icon parallax" style="bottom:24%; left:14%; animation-delay:2s;"><i class="fa-solid fa-dna"></i></span>

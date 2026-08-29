@@ -12,6 +12,10 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
     "astro": "^4.16.0",
-    "marked": "^13.0.3"
+    "marked": "^13.0.3",
+    "three": "^0.185.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.185.4"
   }
 }
