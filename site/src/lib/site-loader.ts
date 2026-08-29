@@ -18,12 +18,18 @@ function renderSocials(socials: SocialLink[]) {
   return socials
     .map(
       (s) =>
-        `<a class="chip" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">` +
-        (s.icon ? `<i class="fa-solid ${escapeHtml(s.icon)}"></i>` : "") +
-        ` ${escapeHtml(s.label)}</a>`
+        `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" title="${escapeHtml(s.label)}">` +
+        (s.icon ? `<i class="fa-solid ${escapeHtml(s.icon)}"></i>` : `<i class="fa-solid fa-link"></i>`) +
+        `</a>`
     )
     .join("");
 }
+
+const NAV_ICONS: Record<string, string> = {
+  Home: "fa-house", About: "fa-user-astronaut", Projects: "fa-rocket",
+  Honors: "fa-trophy", Blog: "fa-feather-pointed", Resources: "fa-folder-open",
+  Uptime: "fa-signal", Contact: "fa-paper-plane", Archive: "fa-box-archive",
+};
 
 export async function bootSite(render?: (data: AllData) => void): Promise<void> {
   const data = await fetchAll();
@@ -36,8 +42,11 @@ export async function bootSite(render?: (data: AllData) => void): Promise<void> 
   if (nav) {
     nav.innerHTML = data.nav
       .map(
-        (l) =>
-          `<li><a href="${escapeHtml(l.href)}">${escapeHtml(l.label)}</a></li>`
+        (l) => {
+          const icon = NAV_ICONS[l.label] || "fa-star";
+          const current = l.href === location.pathname || (l.href !== "/" && location.pathname.startsWith(l.href));
+          return `<li><a href="${escapeHtml(l.href)}" ${current ? 'style="color:var(--primary)"' : ""}><i class="fa-solid ${icon}"></i>${escapeHtml(l.label)}</a></li>`;
+        }
       )
       .join("");
   }

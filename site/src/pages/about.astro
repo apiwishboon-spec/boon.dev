@@ -1,24 +1,31 @@
 ---
 import Base from "../layouts/Base.astro";
 ---
-<Base title="About | Boon" description="About Apiwish (Boon) — my journey, timeline, and skills.">
+<Base title="About | Boon" description="About Apiwish (Boon) — my journey and skills.">
 
   <header class="page-head">
-    <h1>About</h1>
-    <p class="lead muted" id="about-text"></p>
+    <span class="kicker"><i class="fa-solid fa-star"></i> THE OPERATOR</span>
+    <h1>The Story <span class="grad-text">So Far</span></h1>
+    <p id="about-text"></p>
   </header>
 
   <section class="section">
     <div class="container">
-      <h2>My Journey</h2>
+      <div class="chapter">
+        <div class="chapter-num">Origin</div>
+        <h2>Every constellation <em>starts with a spark.</em></h2>
+      </div>
       <div class="timeline" id="timeline"></div>
     </div>
   </section>
 
-  <section class="section" style="background: var(--surface);">
-    <div class="container">
-      <h2>Technical Arsenal</h2>
-      <div class="flex flex-wrap gap-2" id="skills"></div>
+  <section class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,.06), transparent);">
+    <div class="container text-center">
+      <div class="chapter">
+        <div class="chapter-num" style="justify-content:center;">The Arsenal</div>
+        <h2>Tools of the <em>trade.</em></h2>
+      </div>
+      <div class="flex flex-wrap gap-3 center" id="skills"></div>
     </div>
   </section>
 </Base>
@@ -33,23 +40,23 @@ import Base from "../layouts/Base.astro";
 
     const tl = document.getElementById("timeline");
     if (tl) {
-      tl.innerHTML = data.timeline
-        .map(
-          (m) => `
-            <div class="tl-node ${m.is_current ? "current" : ""}">
+      tl.innerHTML = data.timeline.map((m) => `
+        <div class="tl-node ${m.is_current ? "current" : ""}">
+          <div class="tl-head">
+            <span class="tl-icon"><i class="fa-solid ${escapeHtml(m.icon || "fa-star")}"></i></span>
+            <div>
               <div class="tl-period">${escapeHtml(m.period_label)}</div>
-              <h3 class="mt-1">${escapeHtml(m.title)}</h3>
-              <p class="muted">${escapeHtml(m.description)}</p>
-            </div>`
-        )
-        .join("");
+              <h3>${escapeHtml(m.title)}</h3>
+            </div>
+          </div>
+          <p>${escapeHtml(m.description)}</p>
+        </div>`).join("");
     }
 
     const skills = document.getElementById("skills");
     if (skills) {
-      skills.innerHTML = data.skills
-        .map((s) => `<span class="badge">${escapeHtml(s.label)}</span>`)
-        .join(" ");
+      const icons = ["fa-code","fa-database","fa-brain","fa-crown","fa-flask","fa-file-code","fa-puzzle-piece","fa-bolt","fa-dna","fa-gears"];
+      skills.innerHTML = data.skills.map((s, i) => `<span class="skill-pill"><i class="fa-solid ${icons[i % icons.length]}"></i>${escapeHtml(s.label)}</span>`).join("");
     }
   });
 </script>

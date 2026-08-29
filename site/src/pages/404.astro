@@ -2,11 +2,12 @@
 import Base from "../layouts/Base.astro";
 ---
 <Base title="404 | Boon" description="Page not found.">
-  <section class="section" style="text-align:center; min-height:60vh; display:flex; align-items:center; justify-content:center;">
+  <section class="section" style="text-align:center; min-height:70vh; display:flex; align-items:center; justify-content:center;">
     <div>
-      <h1 style="font-size:72px; margin-bottom:0;">404</h1>
-      <p class="lead muted">This page drifted out of orbit.</p>
-      <a class="btn btn-primary mt-2" href="/">Back to Home</a>
+      <span class="float-icon" style="position:relative; font-size:60px; color:var(--primary-2); animation:float 5s ease-in-out infinite;">🚀</span>
+      <h1 style="font-size:clamp(80px,16vw,160px); line-height:1;">4<span class="grad-text">0</span>4</h1>
+      <p class="lead" style="max-width:480px; margin:10px auto 30px;">This page drifted out of orbit. Let's guide you back to a known star.</p>
+      <a class="btn btn-primary btn-lg" href="/"><i class="fa-solid fa-house"></i> Back to Home</a>
     </div>
   </section>
 </Base>

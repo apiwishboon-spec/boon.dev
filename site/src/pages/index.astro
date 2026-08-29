@@ -1,148 +1,249 @@
 ---
 import Base from "../layouts/Base.astro";
 ---
-<Base title="Home | Boon" description="Portfolio of Apiwish (Boon) — Future Scientist & Developer.">
+<Base title="Home | Boon" description="Boon — future scientist & developer. A story told in code, science, and stardust.">
 
-  <!-- HERO -->
+  <!-- ================= HERO / TITLE CARD ================= -->
   <header class="hero">
-    <h1 id="hero-title"></h1>
-    <p class="lead" id="hero-tagline"></p>
-    <a class="btn btn-primary btn-lg" href="/projects">View My Projects</a>
+    <span class="float-icon" style="top:18%; left:8%;"><i class="fa-solid fa-rocket"></i></span>
+    <span class="float-icon" style="top:26%; right:10%; animation-delay:1s;"><i class="fa-solid fa-atom"></i></span>
+    <span class="float-icon" style="bottom:24%; left:14%; animation-delay:2s;"><i class="fa-solid fa-dna"></i></span>
+    <span class="float-icon" style="bottom:30%; right:8%; animation-delay:.5s;"><i class="fa-solid fa-meteor"></i></span>
+    <span class="float-icon" style="top:58%; left:2%; animation-delay:3s;"><i class="fa-solid fa-flask"></i></span>
+    <span class="float-icon" style="top:60%; right:3%; animation-delay:1.5s;"><i class="fa-solid fa-microscope"></i></span>
+
+    <div style="position:relative; z-index:2;">
+      <div class="kicker"><i class="fa-solid fa-star"></i> EST. BANGKOK &nbsp;·&nbsp; EARTH SECTOR <i class="fa-solid fa-star"></i></div>
+      <h1 id="hero-title">Future Scientist<br /><span class="grad-text">&amp; Developer</span></h1>
+      <p class="lead" id="hero-tagline"></p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#story"><i class="fa-solid fa-book-open"></i> Read My Story</a>
+        <a class="btn btn-ghost" href="/projects"><i class="fa-solid fa-arrow-pointer"></i> See the Work</a>
+      </div>
+      <div class="scroll-cue"><i class="fa-solid fa-angles-down fa-2x"></i></div>
+    </div>
   </header>
 
-  <section class="section">
+  <!-- ================= MARQUEE ================= -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span><i class="fa-solid fa-code"></i>PYTHON</span><span><i class="fa-solid fa-brain"></i>AI</span><span><i class="fa-solid fa-flask"></i>SCIENCE</span><span><i class="fa-solid fa-planet-ringed"></i>ASTRONOMY</span><span><i class="fa-solid fa-dna"></i>BIOLOGY</span><span><i class="fa-solid fa-gears"></i>ENGINEERING</span><span><i class="fa-solid fa-chart-line"></i>DATA</span><span><i class="fa-solid fa-brain"></i>PSYCHOLOGY</span>
+    </div>
+  </div>
+
+  <!-- ================= CHAPTER I : THE BEGINNING ================= -->
+  <section id="story" class="section">
     <div class="container">
-      <!-- About / timeline -->
-      <div class="grid grid-2">
-        <div class="card">
-          <h2>My Journey</h2>
-          <div class="timeline" id="timeline"></div>
-        </div>
-        <div class="card">
-          <h2>About</h2>
-          <p class="muted" id="about-text"></p>
-        </div>
+      <div class="chapter">
+        <div class="chapter-num">Chapter 01 — The Beginning</div>
+        <h2>Every constellation <em>starts with a spark.</em></h2>
+        <p class="lede" id="about-text">
+          I love solving complex problems, understanding human behavior, and turning ideas into code.
+        </p>
       </div>
 
-      <h2 class="mt-4">Featured Projects</h2>
-      <div class="grid grid-3" id="projects"></div>
+      <div class="timeline" id="timeline"></div>
+
+      <div class="quote-block glass" style="padding:60px 30px; margin-top:30px;">
+        <span class="qmark">&ldquo;</span>
+        <blockquote>Coding is not just about communicating with computers &mdash; it's about communicating with the future.</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CHAPTER II : THE WORK ================= -->
+  <section class="section" style="background: linear-gradient(180deg, transparent, rgba(122,168,255,.06), transparent);">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-num">Chapter 02 — The Work</div>
+        <h2>Missions, <em>launched from the lab.</em></h2>
+        <p class="lede">A rotating deck of flagship builds &mdash; each one a small machine solving a real-world problem.</p>
+      </div>
+
+      <div class="grid grid-2" id="projects"></div>
+
       <div class="text-center mt-3">
-        <a class="btn btn-secondary" href="/projects">All Projects</a>
+        <a class="btn btn-ghost" href="/projects"><i class="fa-solid fa-arrow-right-long"></i> See All Projects</a>
       </div>
     </div>
   </section>
 
-  <section class="section" style="background: var(--surface);">
-    <div class="container text-center">
-      <h2>Recent Honors</h2>
+  <!-- ================= CHAPTER III : HONORS ================= -->
+  <section class="section">
+    <div class="container">
+      <div class="chapter text-center">
+        <div class="chapter-num" style="justify-content:center;">Chapter 03 — The Trophy Shelf</div>
+        <h2>Proof, <em>in starlight.</em></h2>
+        <p class="lede" style="margin:0 auto;">Competitions, certificates, and milestones earned along the way.</p>
+      </div>
       <div class="honor-grid" id="honors"></div>
-      <a class="btn btn-secondary mt-2" href="/honors">View Full Archive</a>
+      <div class="text-center mt-3">
+        <a class="btn btn-ghost" href="/honors"><i class="fa-solid fa-trophy"></i> View Full Archive</a>
+      </div>
     </div>
   </section>
 
+  <!-- ================= CHAPTER IV : THE ARSENAL ================= -->
+  <section class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,.06), transparent);">
+    <div class="container text-center">
+      <div class="chapter">
+        <div class="chapter-num" style="justify-content:center;">Chapter 04 — The Arsenal</div>
+        <h2>Tools of the <em>trade.</em></h2>
+      </div>
+      <div class="flex flex-wrap gap-3 center" id="skills"></div>
+
+      <div class="grid grid-4 mt-3" id="stats">
+        <div class="stat"><div class="num" data-count="6">0</div><div class="label"><i class="fa-solid fa-flask"></i> Years of Science</div></div>
+        <div class="stat"><div class="num" data-count="3">0</div><div class="label"><i class="fa-solid fa-code"></i> Major Projects</div></div>
+        <div class="stat"><div class="num" data-count="2">0</div><div class="label"><i class="fa-solid fa-trophy"></i> Honors Won</div></div>
+        <div class="stat"><div class="num" data-count="10">0</div><div class="label"><i class="fa-solid fa-brain"></i> Skills (#)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CHAPTER V : THE STORY CONTINUES ================= -->
   <section class="section">
     <div class="container text-center">
-      <h2>Technical Arsenal</h2>
-      <div class="flex flex-wrap justify-center gap-2" id="skills"></div>
+      <div class="chapter">
+        <div class="chapter-num" style="justify-content:center;">Chapter 05 — The Story Continues</div>
+        <h2>From the <em>mission log.</em></h2>
+      </div>
+      <div class="grid grid-3" id="posts"></div>
+      <div class="text-center mt-3">
+        <a class="btn btn-primary" href="/blog"><i class="fa-solid fa-feather-pointed"></i> Read the Blog</a>
+      </div>
     </div>
   </section>
 
-  <section class="section" style="background: var(--surface);">
+  <!-- ================= FINALE / CTA ================= -->
+  <section class="section pb-6" style="padding-bottom:140px;">
     <div class="container text-center">
-      <h2>From My Blog</h2>
-      <a class="btn btn-secondary mt-2" href="/blog">Read the Blog</a>
-    </div>
-  </section>
-
-  <section class="section text-center">
-    <div class="container">
-      <h2 id="contact-heading"></h2>
-      <p class="lead muted" id="contact-subtext"></p>
-      <a class="btn btn-primary btn-lg" id="contact-email" href="#">Get in Touch</a>
+      <div class="quote-block">
+        <span class="qmark">&ldquo;</span>
+        <h2 style="font-size:clamp(34px,5vw,58px);" id="contact-heading">Let's Build the Future</h2>
+        <p class="lede" style="margin:0 auto 30px;" id="contact-subtext"></p>
+        <a class="btn btn-primary btn-lg" id="contact-email" href="#"><i class="fa-solid fa-paper-plane"></i> Open a Channel</a>
+      </div>
     </div>
   </section>
 </Base>
 
 <script>
   import { bootSite, escapeHtml } from "../lib/site-loader";
+  import { formatDate } from "../lib/format";
   import type { AllData } from "../lib/types";
 
   bootSite((data: AllData) => {
     const cfg = data.config;
 
-    const heroTitle = document.getElementById("hero-title");
-    if (heroTitle) {
-      heroTitle.innerHTML = `Future <span class="accent">Scientist</span> &amp; Developer`;
-    }
     const tagline = document.getElementById("hero-tagline");
     if (tagline) tagline.textContent = cfg.tagline;
-
-    // Timeline
-    const tl = document.getElementById("timeline");
-    if (tl) {
-      tl.innerHTML = data.timeline
-        .map(
-          (m) => `
-            <div class="tl-node ${m.is_current ? "current" : ""}">
-              <div class="tl-period">${escapeHtml(m.period_label)}</div>
-              <h3 class="mt-1">${escapeHtml(m.title)}</h3>
-              <p class="muted">${escapeHtml(m.description)}</p>
-            </div>`
-        )
-        .join("");
-    }
 
     const about = document.getElementById("about-text");
     if (about) about.textContent = cfg.about;
 
+    // ---- Timeline / journey ----
+    const tl = document.getElementById("timeline");
+    if (tl) {
+      tl.innerHTML = data.timeline.map((m) => `
+        <div class="tl-node ${m.is_current ? "current" : ""}">
+          <div class="tl-head">
+            <span class="tl-icon"><i class="fa-solid ${escapeHtml(m.icon || "fa-star")}"></i></span>
+            <div>
+              <div class="tl-period">${escapeHtml(m.period_label)}</div>
+              <h3>${escapeHtml(m.title)}</h3>
+            </div>
+          </div>
+          <p>${escapeHtml(m.description)}</p>
+        </div>`).join("");
+    }
+
+    // ---- Projects ----
     const projects = document.getElementById("projects");
     if (projects) {
-      const featured = data.projects.filter((p) => p.featured).slice(0, 3);
-      projects.innerHTML = featured
-        .map(
-          (p) => `
-            <a class="card" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit">
-              ${p.cover_url ? `<div class="card-img"><img src="${escapeHtml(p.cover_url)}" alt="${escapeHtml(p.title)}" loading="lazy" /></div>` : ""}
-              <h3 class="mt-1">${escapeHtml(p.title)}</h3>
-              <p class="muted">${escapeHtml(p.tagline || p.description)}</p>
-              <div class="flex flex-wrap gap-2 mt-1">${
-                (p.tech || []).slice(0, 3).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
-              }</div>
-            </a>`
-        )
-        .join("");
+      const featured = (data.projects.filter(p => p.featured).length ? data.projects.filter(p => p.featured) : data.projects).slice(0, 4);
+      projects.innerHTML = featured.map((p) => `
+        <a class="glass project-card" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;">
+          <div class="pc-icon"><i class="fa-solid ${p.tech?.includes("AI") ? "fa-robot" : p.tech?.includes("macOS") || p.tech?.includes("Automation") ? "fa-gears" : "fa-code"}"></i></div>
+          <h3>${escapeHtml(p.title)}</h3>
+          <p>${escapeHtml(p.tagline || p.description)}</p>
+          <div class="tagrow">${(p.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
+        </a>`).join("");
     }
 
+    // ---- Honors ----
     const honors = document.getElementById("honors");
     if (honors) {
-      honors.innerHTML = data.honors.slice(0, 3)
-        .map(
-          (h) => `
-            <div class="honor-card">
-              ${h.image_url ? `<img src="${escapeHtml(h.image_url)}" alt="${escapeHtml(h.alt)}" loading="lazy" />` : ""}
-              <h3 class="mt-2">${escapeHtml(h.title)}</h3>
-              <p class="muted">${escapeHtml(h.description)}</p>
-              <span class="badge">${escapeHtml(h.badge_label)}</span>
-            </div>`
-        )
-        .join("");
+      honors.classList.add("grid");
+      honors.classList.add("grid-3");
+      honors.style.marginTop = "40px";
+      honors.innerHTML = data.honors.slice(0, 3).map((h) => `
+        <div class="glass honor-card">
+          ${h.image_url ? `<img src="${escapeHtml(h.image_url)}" alt="${escapeHtml(h.alt)}" loading="lazy" />` : `<div class="h-icon"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-medal")}"></i></div>`}
+          <span class="chip" style="margin-bottom:10px;"><i class="fa-solid ${escapeHtml(h.badge_icon || "fa-star")}"></i>${escapeHtml(h.badge_label)}</span>
+          <h3>${escapeHtml(h.title)}</h3>
+          <p>${escapeHtml(h.description)}</p>
+        </div>`).join("");
     }
 
+    // ---- Skills ----
     const skills = document.getElementById("skills");
     if (skills) {
-      skills.innerHTML = data.skills
-        .map((s) => `<span class="badge">${escapeHtml(s.label)}</span>`)
-        .join(" ");
+      const icons = ["fa-code","fa-database","fa-brain","fa-crown","fa-flask","fa-file-code","fa-puzzle-piece","fa-bolt","fa-dna","fa-gears"];
+      skills.innerHTML = data.skills.map((s, i) => `<span class="skill-pill"><i class="fa-solid ${icons[i % icons.length]}"></i>${escapeHtml(s.label)}</span>`).join("");
     }
 
+    // ---- Stats (counters) ----
+    const stats = document.getElementById("stats");
+    if (stats) {
+      const counters = stats.querySelectorAll("[data-count]");
+      const targets = [
+        Math.max(data.timeline.length * 3, 6),
+        data.projects.length,
+        data.honors.length,
+        data.skills.length,
+      ];
+      counters.forEach((el, i) => {
+        const target = targets[i] ?? 0;
+        animateCount(el as HTMLElement, target);
+      });
+    }
+
+    // ---- Blog preview ----
+    const posts = document.getElementById("posts");
+    if (posts) {
+      posts.innerHTML = data.posts.slice(0, 3).map((post) => `
+        <a class="glass" href="/blog/${encodeURIComponent(post.slug)}" style="color:inherit;text-decoration:none;display:flex;flex-direction:column;">
+          <div class="pc-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+          <p style="font-family:var(--font-mono);font-size:12px;color:var(--cyan);margin:0 0 8px;">${formatDate(post.date)}</p>
+          <h3 style="font-size:20px;">${escapeHtml(post.title)}</h3>
+          <p style="color:var(--text-muted);flex:1;">${escapeHtml(post.excerpt)}</p>
+          <div class="tagrow">${(post.tags || []).map(t => `<span class="chip">${escapeHtml(t)}</span>`).join("")}</div>
+        </a>`).join("");
+    }
+
+    // ---- CTA / contact ----
     const contactHeading = document.getElementById("contact-heading");
     if (contactHeading) contactHeading.textContent = cfg.contact_heading;
     const contactSub = document.getElementById("contact-subtext");
     if (contactSub) contactSub.textContent = cfg.contact_subtext;
     const emailLink = document.getElementById("contact-email");
-    const email = cfg.socials.find((s) => s.type === "email");
+    const email = cfg.socials.find(s => s.type === "email");
     if (emailLink && email) emailLink.href = email.url;
 
     document.title = (cfg.brand ? cfg.brand + " | " : "") + "Home";
   });
+
+  function animateCount(el: HTMLElement, target: number) {
+    if (el.dataset.done) return;
+    el.dataset.done = "1";
+    const dur = 1200;
+    const start = performance.now();
+    function tick(now: number) {
+      const p = Math.min((now - start) / dur, 1);
+      el.textContent = String(Math.round(p * target));
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
 </script>

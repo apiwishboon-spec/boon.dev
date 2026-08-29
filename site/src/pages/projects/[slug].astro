@@ -2,7 +2,6 @@
 import Base from "../../layouts/Base.astro";
 import { getClient, isConfigured } from "../../lib/supabase";
 import { demoData } from "../../lib/demo";
-import { renderMarkdown } from "../../lib/format";
 
 export async function getStaticPaths() {
   const sb = getClient();
@@ -10,17 +9,10 @@ export async function getStaticPaths() {
   if (sb && isConfigured()) {
     try {
       const { data } = await sb.from("projects").select("slug,title");
-      if (data && data.length) {
-        projects = data;
-      }
-    } catch {
-      /* fallback */
-    }
+      if (data && data.length) projects = data;
+    } catch { /* fallback */ }
   }
-  return projects.map((p) => ({
-    params: { slug: p.slug },
-    props: { title: p.title },
-  }));
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { title: p.title } }));
 }
 
 const { slug } = Astro.params;
@@ -29,12 +21,9 @@ const { title } = Astro.props;
 <Base title={`${title} | Projects`} description={`Project: ${title}`}>
 
   <section class="section">
-    <div class="container">
-      <a class="btn btn-secondary btn-sm" href="/projects">← All Projects</a>
-
-      <div id="project" class="card" style="margin-top: var(--space-lg); padding: var(--space-lg);">
-        <div class="loading">Loading…</div>
-      </div>
+    <div class="container" style="max-width: 820px;">
+      <a class="btn btn-ghost" href="/projects"><i class="fa-solid fa-arrow-left-long"></i> All Projects</a>
+      <div id="project" style="margin-top: 30px;"></div>
     </div>
   </section>
 </Base>
@@ -44,10 +33,7 @@ const { title } = Astro.props;
   import { renderMarkdown } from "../../lib/format";
   import type { AllData } from "../../lib/types";
 
-  // The slug is known statically; project data loads live from CMS.
-  // Read current slug from the URL to be safe when deployed at a subpath.
-  const slugPath = new URL(location.href).pathname;
-  const slug = slugPath.split("/").filter(Boolean).pop() || "unknown";
+  const slug = new URL(location.href).pathname.split("/").filter(Boolean).pop() || "unknown";
 
   bootSite((data: AllData) => {
     const project = data.projects.find((p) => p.slug === slug);
@@ -55,27 +41,20 @@ const { title } = Astro.props;
     if (!wrap) return;
 
     if (!project) {
-      wrap.innerHTML = `<div class="text-center"><h2>Project not found</h2><a class="btn btn-secondary mt-2" href="/projects">Back to projects</a></div>`;
+      wrap.innerHTML = `<div class="text-center glass"><h2>Object not found</h2><a class="btn btn-ghost mt-2" href="/projects">Back to projects</a></div>`;
       return;
     }
 
     wrap.innerHTML = `
-      <h1>${escapeHtml(project.title)}</h1>
-      <p class="lead muted">${escapeHtml(project.tagline || project.description)}</p>
-      ${
-        project.cover_url
-          ? `<div class="card-img" style="max-width:560px"><img src="${escapeHtml(project.cover_url)}" alt="${escapeHtml(project.title)}" /></div>`
-          : ""
-      }
-      <div class="flex flex-wrap gap-2 mt-2">${
-        (project.tech || []).map((t) => `<span class="badge">${escapeHtml(t)}</span>`).join("")
-      }</div>
-      <div class="flex gap-2 mt-3">
-        ${project.live_url ? `<a class="btn btn-primary" href="${escapeHtml(project.live_url)}" target="_blank" rel="noopener">Live Demo</a>` : ""}
-        ${project.github_url ? `<a class="btn btn-secondary" href="${escapeHtml(project.github_url)}" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Source</a>` : ""}
+      <h1 style="font-size:clamp(36px,5.5vw,58px);">${escapeHtml(project.title)}</h1>
+      <p class="lede" style="color:var(--text-muted);font-size:20px;">${escapeHtml(project.tagline || project.description)}</p>
+      <div class="tagrow" style="margin:8px 0 26px;">${(project.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
+      ${project.cover_url ? `<img src="${escapeHtml(project.cover_url)}" alt="${escapeHtml(project.title)}" style="width:100%;border-radius:20px;border:1px solid var(--border);margin-bottom:26px;box-shadow:var(--shadow-lg);" />` : ""}
+      <div class="flex gap-2" style="gap:12px;margin-bottom:26px;">
+        ${project.live_url ? `<a class="btn btn-primary" href="${escapeHtml(project.live_url)}" target="_blank" rel="noopener">${escapeHtml(project.live_url.includes("github") ? '<i class="fa-brands fa-github"></i> Source' : '<i class="fa-solid fa-arrow-up-right-from-square"></i> Live')}<i class="fa-solid fa-arrow-up-right-from-square"></i> Live</a>` : ""}
+        ${project.github_url ? `<a class="btn btn-ghost" href="${escapeHtml(project.github_url)}" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Source</a>` : ""}
       </div>
-      <hr />
-      <div class="prose">${renderMarkdown(project.body)}</div>
+      <div class="prose" style="border-top:1px solid var(--border);padding-top:26px;">${renderMarkdown(project.body)}</div>
     `;
     document.title = (data.config.brand ? data.config.brand + " | " : "") + project.title;
   });
