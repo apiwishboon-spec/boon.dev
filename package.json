@@ -4,13 +4,17 @@
   "version": "2.0.0",
   "description": "Dynamic portfolio + CMS (Astro site + React admin + Supabase)",
   "type": "module",
+  "workspaces": [
+    "site",
+    "admin"
+  ],
   "scripts": {
     "site:dev": "npm --prefix site run dev",
     "site:build": "npm --prefix site run build",
     "admin:dev": "npm --prefix admin run dev",
     "admin:build": "npm --prefix admin run build",
     "seed": "node supabase/seed/seed.js",
-    "build": "npm run site:build && npm run admin:build"
+    "build": "bash ./build.sh"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.112.4"

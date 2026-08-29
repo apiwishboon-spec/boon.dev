@@ -1,0 +1,2 @@
+# Server the admin SPA for any path under /admin (client-side routing)
+/admin/*  /admin/index.html  200

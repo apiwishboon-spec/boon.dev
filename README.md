@@ -116,24 +116,45 @@ After signing into `/admin`, you get CRUD screens for:
 
 ## ☁️ Deployment
 
-### Public site (Cloudflare Pages / GitHub Pages)
-Build output is `site/dist`:
-```bash
-cd site && npm run build
-# publish site/dist
-```
-Set the two `PUBLIC_SUPABASE_*` build env vars in the hosting dashboard.
+### Cloudflare Pages (recommended — serves site + admin from one project)
 
-### Admin (any static host)
-Build output is `admin/dist`:
+The root `build` script builds the Astro site **and** merges the React admin
+into `site/dist/admin`, so a single Cloudflare Pages project serves everything.
+
+Configure your **boon.is-a.dev** Pages project (connected to this repo) with:
+
+| Setting          | Value               |
+|------------------|---------------------|
+| Build command    | `npm run build`     |
+| Build output dir | `site/dist`         |
+
+Add these **environment variables** (both are build-time vars, no framework preset
+needed — frontend build):
+- `PUBLIC_SUPABASE_URL` — your Supabase project URL
+- `PUBLIC_SUPABASE_ANON_KEY` — the anon (public) key
+- `VITE_SUPABASE_URL` — same project URL
+- `VITE_SUPABASE_ANON_KEY` — same anon key
+
+> `PUBLIC_*` vars are read by the Astro site; `VITE_*` vars are read by the React
+> admin (Vite). Set all four to the same values.
+
+The build output includes:
+- `site/dist` homepage + all pages (fetches content live from Supabase)
+- `site/dist/admin` — the React CMS (SPA at `/admin`)
+- `site/dist/_redirects` — routes `/admin/*` to the SPA
+- `site/dist/uptime`, `.well-known`, and domain verification files preserved
+
+Set any env vars needed locally too: `site/.env` (PUBLIC_*), `admin/.env` (VITE_*).
+
+### Manual build
 ```bash
-cd admin && npm run build
-# publish admin/dist under the /admin path of your site
+npm install            # root (contains @supabase/supabase-js for seed)
+npm run build          # → site/dist (site + admin merged)
 ```
-Set `VITE_SUPABASE_*` build env vars.
 
 > Tip: add a Supabase webhook (Database → Webhooks) that triggers a Pages build
 > on table changes if you want fresh prerendered SEO pages on content edits.
+
 
 ## 📄 License
 See [LICENSE](LICENSE).
