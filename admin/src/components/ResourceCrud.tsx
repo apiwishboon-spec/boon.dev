@@ -20,6 +20,8 @@ export interface ResourceCrudProps {
   subtitle?: string;
   /** Optional: stringify the whole row as a JSON editor row for "config" style tables. */
   displayFn?: (row: any) => string;
+  /** Optional: URL for a "View" button on each row (e.g. an auto-created public page). */
+  viewUrl?: (row: any) => string;
 }
 
 export default function ResourceCrud({
@@ -30,6 +32,7 @@ export default function ResourceCrud({
   orderAsc = true,
   subtitle,
   displayFn,
+  viewUrl,
 }: ResourceCrudProps) {
   const [rows, setRows] = useState<any[]>([]);
   const [editing, setEditing] = useState<any | null>(null);
@@ -100,6 +103,17 @@ export default function ResourceCrud({
               {subtitle && <div className="sub">{row[subtitle]}</div>}
             </div>
             <div className="item-actions">
+              {viewUrl && (
+                <a
+                  className="btn btn-secondary btn-sm"
+                  href={viewUrl(row)}
+                  target="_blank"
+                  rel="noopener"
+                  title="Open the auto-created page"
+                >
+                  <i className="fa-solid fa-arrow-up-right-from-square" /> View
+                </a>
+              )}
               <button className="btn btn-secondary btn-sm" onClick={() => { setIsNew(false); setEditing(row); }}>
                 <i className="fa-solid fa-pen" /> Edit
               </button>
@@ -155,6 +169,24 @@ function FormModal({
 
   const set = (name: string, value: any) => setForm((p: any) => ({ ...p, [name]: value }));
 
+  // Auto-generate a slug from the title when creating a new item.
+  function slugify(s: string): string {
+    return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "") || "";
+  }
+
+  const onChange = (f2: Field, value: any) => {
+    const hasSlug = fields.some((x) => x.name === "slug");
+    const isBlank = (v: any) => v === undefined || v === null || v === "";
+    const newEntry = !initial || isBlank(initial.id);
+    if (
+      hasSlug && newEntry && f2.name === "title" && isBlank(form.slug)
+    ) {
+      setForm((p: any) => ({ ...p, title: value, slug: slugify(value) }));
+      return;
+    }
+    set(f2.name, value);
+  };
+
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -171,7 +203,7 @@ function FormModal({
               {f.type === "textarea" && (
                 <textarea
                   value={form[f.name]}
-                  onChange={(e) => set(f.name, e.target.value)}
+                  onChange={(e) => onChange(f, e.target.value)}
                   placeholder={f.placeholder}
                 />
               )}
@@ -179,11 +211,11 @@ function FormModal({
                 <input
                   type="checkbox"
                   checked={form[f.name]}
-                  onChange={(e) => set(f.name, e.target.checked)}
+                  onChange={(e) => onChange(f, e.target.checked)}
                 />
               )}
               {f.type === "select" && (
-                <select value={form[f.name]} onChange={(e) => set(f.name, e.target.value)}>
+                <select value={form[f.name]} onChange={(e) => onChange(f, e.target.value)}>
                   {(f.options ?? []).map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
               )}
@@ -191,7 +223,7 @@ function FormModal({
                 <input
                   type={f.type === "number" ? "number" : "text"}
                   value={form[f.name]}
-                  onChange={(e) => set(f.name, e.target.value)}
+                  onChange={(e) => onChange(f, e.target.value)}
                   placeholder={f.placeholder}
                 />
               )}

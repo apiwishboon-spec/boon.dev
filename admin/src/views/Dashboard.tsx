@@ -88,6 +88,7 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "featured", label: "Featured", type: "checkbox" },
               { name: "sort_order", label: "Order", type: "number" },
             ]}
+            viewUrl={(r) => `/projects/view?id=${encodeURIComponent(r.id)}`}
           />
         )}
         {active === "blog" && (
@@ -106,6 +107,7 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "image_url", label: "Image URL" },
               { name: "published", label: "Published", type: "checkbox" },
             ]}
+            viewUrl={(r) => `/blog/view?id=${encodeURIComponent(r.id)}`}
           />
         )}
         {active === "honors" && (
