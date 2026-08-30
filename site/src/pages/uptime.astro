@@ -1,0 +1,169 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Uptime | Boon" description="Live status of Boon's public services.">
+
+  <section class="section">
+    <div class="container" style="max-width: 940px;" data-reveal>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h1 style="font-size:clamp(32px,5vw,52px);margin:0;">Uptime Dashboard</h1>
+          <p class="lede muted" style="margin-top:6px;">Live checks for public services. Auto-refreshes every minute.</p>
+        </div>
+        <button class="btn btn-primary" id="uptime-refresh" type="button">
+          <i class="fa-solid fa-rotate"></i> Refresh now
+        </button>
+      </div>
+
+      <p class="muted" id="uptime-last" style="font-family:var(--font-mono);font-size:13px;margin-top:8px;">Last checked: —</p>
+
+      <div id="uptime-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;margin-top:24px;"></div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { getClient } from "../lib/supabase";
+  import { escapeHtml } from "../lib/site-loader";
+
+  const listEl = document.getElementById("uptime-list");
+  const lastEl = document.getElementById("uptime-last");
+  const refreshBtn = document.getElementById("uptime-refresh");
+  const HISTORY_KEY = "boon-uptime-history-v1";
+  const HISTORY_LEN = 60;
+
+  function loadHistory(): Record<string, boolean[]> {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "{}"); }
+    catch { return {}; }
+  }
+  function saveHistory(h: Record<string, boolean[]>) {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(h)); } catch {}
+  }
+
+  const PRESET: Record<string, { label: string; color: string; icon: string }> = {
+    operational: { label: "Operational", color: "#2fbf71", icon: "fa-circle-check" },
+    degraded:    { label: "Degraded",    color: "#f5b942", icon: "fa-triangle-exclamation" },
+    maintenance: { label: "Maintenance", color: "#8b7bff", icon: "fa-screwdriver-wrench" },
+    down:        { label: "Down",        color: "#ef5b5b", icon: "fa-circle-xmark" },
+  };
+
+  function statusPill(label: string, color: string, icon: string) {
+    return `<span style="display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;letter-spacing:.04em;color:#04101f;background:${color};">
+      <i class="fa-solid ${icon}"></i>${escapeHtml(label)}
+    </span>`;
+  }
+
+  function historyBars(history: boolean[] | undefined) {
+    if (!history || !history.length) return "";
+    const cells = history
+      .map((ok) => `<span style="width:6px;height:14px;border-radius:2px;background:${ok ? "#2fbf71" : "#ef5b5b"};display:inline-block;"></span>`)
+      .join("");
+    return `<div style="display:flex;gap:2px;align-items:flex-end;margin-top:12px;" title="Last ${history.length} checks">${cells}</div>`;
+  }
+
+  async function checkUrl(url: string): Promise<{ up: boolean; latency: number | null; error?: string }> {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 7000);
+    const t0 = performance.now();
+    try {
+      const res = await fetch(url, { method: "GET", mode: "no-cors", signal: controller.signal });
+      clearTimeout(timer);
+      return { up: res.type === "opaque" || res.ok, latency: Math.round(performance.now() - t0) };
+    } catch (e: any) {
+      clearTimeout(timer);
+      return { up: false, latency: null, error: e?.name === "AbortError" ? "Timed out" : "Unreachable" };
+    }
+  }
+
+  function render(targets: any[]) {
+    const history = loadHistory();
+    listEl!.innerHTML = targets
+      .map((t) => {
+        const name = escapeHtml(t.name);
+        const url = escapeHtml(t.url || "");
+        const note = t.note ? `<p class="muted" style="font-size:13px;margin:6px 0 0;">${escapeHtml(t.note)}</p>` : "";
+
+        if (t.mode === "custom") {
+          return `<article style="border:1px solid var(--border);border-radius:20px;padding:18px;background:var(--glass);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <h3 style="margin:0;font-size:16px;">${name}</h3>
+              ${statusPill(t.custom_label || "Custom", "#22d3ee", "fa-wand-magic-sparkles")}
+            </div>
+            ${url ? `<p class="muted" style="font-size:13px;margin:6px 0 0;">${url}</p>` : ""}
+            ${note}
+          </article>`;
+        }
+
+        if (t.mode === "auto") {
+          const live = (t as any).__live;
+          const h = (history[t.url] || []).slice(-HISTORY_LEN);
+          const pill = live
+            ? statusPill("Operational", "#2fbf71", "fa-circle-check")
+            : statusPill(live === null ? "Checking…" : "Unreachable", live === null ? "#9aa5b1" : "#ef5b5b", live === null ? "fa-circle-hourglass-half" : "fa-circle-xmark");
+          const latency = live && live.latency != null ? `<p class="muted" style="font-size:13px;margin:6px 0 0;">${live.latency} ms</p>` : "";
+          return `<article style="border:1px solid var(--border);border-radius:20px;padding:18px;background:var(--glass);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <h3 style="margin:0;font-size:16px;">${name}</h3>
+              ${pill}
+            </div>
+            ${url ? `<p class="muted" style="font-size:13px;margin:6px 0 0;">${url}</p>` : ""}
+            ${latency}${note}
+            ${historyBars(h)}
+          </article>`;
+        }
+
+        const preset = PRESET[t.mode] || PRESET.down;
+        return `<article style="border:1px solid var(--border);border-radius:20px;padding:18px;background:var(--glass);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+            <h3 style="margin:0;font-size:16px;">${name}</h3>
+            ${statusPill(preset.label, preset.color, preset.icon)}
+          </div>
+          ${url ? `<p class="muted" style="font-size:13px;margin:6px 0 0;">${url}</p>` : ""}
+          ${note}
+        </article>`;
+      })
+      .join("");
+  }
+
+  async function refresh() {
+    if (refreshBtn) refreshBtn.disabled = true;
+    const sb = getClient();
+    const targets: any[] = [];
+    if (sb) {
+      const { data, error } = await sb
+        .from("uptime_targets")
+        .select("*")
+        .eq("enabled", true)
+        .order("sort_order", { ascending: true });
+      if (!error && data) targets.push(...data);
+    }
+    if (!targets.length) {
+      listEl!.innerHTML = `<div class="glass" style="padding:24px;text-align:center;">Uptime targets are fully managed from the admin — add some in <a href="/admin">Boon Admin → Uptime</a>.</div>`;
+      if (lastEl) lastEl.textContent = "Last checked: —";
+      if (refreshBtn) refreshBtn.disabled = false;
+      return;
+    }
+
+    await Promise.all(
+      targets.map(async (t) => {
+        t.__live = null;
+        if (t.mode !== "auto" || !t.url) return;
+        const r = await checkUrl(t.url);
+        t.__live = r;
+        const history = loadHistory();
+        const arr = history[t.url] || [];
+        arr.push(r.up);
+        history[t.url] = arr.slice(-HISTORY_LEN);
+        saveHistory(history);
+      })
+    );
+
+    render(targets);
+    if (lastEl) lastEl.textContent = `Last checked: ${new Date().toLocaleTimeString()}`;
+    if (refreshBtn) refreshBtn.disabled = false;
+  }
+
+  refresh();
+  setInterval(refresh, 60000);
+  if (refreshBtn) refreshBtn.addEventListener("click", refresh);
+</script>

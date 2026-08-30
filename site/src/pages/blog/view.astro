@@ -17,10 +17,11 @@ import Base from "../../layouts/Base.astro";
   import type { AllData } from "../../lib/types";
 
   const params = new URLSearchParams(location.search);
-  const id = params.get("id") || "";
+  const pathSlug = (location.pathname.match(/\/(?:projects|blog)\/([^/]+?)\/?$/) || [])[1];
+  const id = params.get("id") || params.get("slug") || (pathSlug && pathSlug !== "view" ? pathSlug : "") || "";
 
   bootSite((data: AllData) => {
-    const post = data.posts.find((p) => p.id === id);
+    const post = data.posts.find((p) => p.id === id || p.slug === id);
     const wrap = document.getElementById("post");
     if (!wrap) return;
 
@@ -34,8 +35,44 @@ import Base from "../../layouts/Base.astro";
       <h1 style="font-size:clamp(34px,5vw,54px);">${escapeHtml(post.title)}</h1>
       <div class="tagrow" style="margin:10px 0 20px;">${(post.tags || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
       ${post.image_url ? `<img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" style="width:100%;border-radius:20px;border:1px solid var(--border);margin-bottom:26px;box-shadow:var(--shadow-lg);" />` : ""}
+      <button class="btn btn-ghost" id="copy-link" type="button" style="margin-bottom:20px;"><i class="fa-solid fa-link"></i> Copy link</button>
       <div class="prose">${renderMarkdown(post.body)}</div>
     `;
     document.title = (data.config.brand ? data.config.brand + " | " : "") + post.title;
+
+    const ogTitle = post.title + (data.config.brand ? " | " + data.config.brand : "");
+    const ogDesc = post.excerpt || "";
+    const ogUrl = `${location.origin}/blog/${encodeURIComponent(post.slug)}`;
+    const setMeta = (sel: string, attr: string, value: string) => {
+      const el = document.head.querySelector(`meta[${attr}="${sel}"]`);
+      if (el) el.setAttribute("content", value);
+    };
+    setMeta("og:title", "property", ogTitle);
+    setMeta("og:description", "property", ogDesc);
+    setMeta("og:url", "property", ogUrl);
+    setMeta("twitter:title", "name", ogTitle);
+    setMeta("twitter:description", "name", ogDesc);
+    if (post.image_url) {
+      const img = post.image_url.startsWith("http") ? post.image_url : location.origin + post.image_url;
+      setMeta("og:image", "property", img);
+      setMeta("twitter:image", "name", img);
+    }
+    const canon = document.head.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute("href", ogUrl);
+
+    const copyBtn = document.getElementById("copy-link");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        } catch {
+          copyBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Copy failed';
+        }
+        setTimeout(() => {
+          copyBtn.innerHTML = '<i class="fa-solid fa-link"></i> Copy link';
+        }, 1600);
+      });
+    }
   });
 </script>

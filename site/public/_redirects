@@ -1,2 +1,10 @@
-# Server the admin SPA for any path under /admin (client-side routing)
+# Serve the admin SPA for any path under /admin (client-side routing)
 /admin/*  /admin/index.html  200
+
+# Template view pages (exact-paths first so the slug wildcard below never catches them)
+/projects/view*  /projects/view/index.html  200
+/blog/view*      /blog/view/index.html  200
+
+# Pretty auto-created project/blog URLs -> template page keyed by slug
+/projects/:slug  /projects/view/?id=:slug  200
+/blog/:slug      /blog/view/?id=:slug  200

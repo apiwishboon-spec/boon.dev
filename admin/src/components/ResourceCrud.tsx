@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { supabase, uploadFile } from "../lib/supabase";
 
 export interface Field {
   name: string;
@@ -131,6 +131,7 @@ export default function ResourceCrud({
           fields={fields}
           initial={editing}
           saving={saving}
+          table={table}
           onCancel={() => setEditing(null)}
           onSubmit={handleSave}
         />
@@ -144,6 +145,7 @@ function FormModal({
   fields,
   initial,
   saving,
+  table,
   onCancel,
   onSubmit,
 }: {
@@ -151,6 +153,7 @@ function FormModal({
   fields: Field[];
   initial: any;
   saving: boolean;
+  table: string;
   onCancel: () => void;
   onSubmit: (form: any) => void;
 }) {
@@ -227,6 +230,14 @@ function FormModal({
                   placeholder={f.placeholder}
                 />
               )}
+              {f.type === "file" && (
+                <FileField
+                  value={form[f.name]}
+                  table={table}
+                  label="Upload"
+                  onChange={(url) => onChange(f, url)}
+                />
+              )}
               {f.hint && <div className="muted" style={{ fontSize: 11, marginTop: 4 }}>{f.hint}</div>}
             </div>
           ))}
@@ -238,6 +249,75 @@ function FormModal({
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function FileField({
+  value,
+  table,
+  label,
+  onChange,
+}: {
+  value: string;
+  table: string;
+  label: string;
+  onChange: (url: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  async function handleFile(file: File) {
+    setUploading(true);
+    setError(null);
+    try {
+      const name = file.name.replace(/[^a-zA-Z0-9.\-_]+/g, "-");
+      const path = `${table}/${Date.now()}-${name}`;
+      const url = await uploadFile(file, path);
+      onChange(url);
+    } catch (e: any) {
+      setError(e?.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const isImage = /\.(png|jpe?g|webp|gif|svg)$/i.test(value);
+
+  return (
+    <div>
+      <div className="file-row" style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <input
+          type="text"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="…or paste a URL"
+          style={{ flex: 1 }}
+        />
+        <button
+          type="button"
+          className="btn btn-secondary btn-sm"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          <i className="fa-solid fa-upload" /> {uploading ? "Uploading…" : label}
+        </button>
+      </div>
+      <input
+        ref={inputRef}
+        type="file"
+        style={{ display: "none" }}
+        onChange={(e) => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
+      />
+      {error && <div className="error">{error}</div>}
+      {value && isImage && (
+        <img
+          src={value}
+          alt="preview"
+          style={{ marginTop: 8, maxWidth: "100%", maxHeight: 90, borderRadius: 8, border: "1px solid #ddd" }}
+        />
+      )}
     </div>
   );
 }

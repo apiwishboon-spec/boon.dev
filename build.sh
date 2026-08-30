@@ -17,4 +17,7 @@ rm -rf site/dist/admin
 mkdir -p site/dist/admin
 cp -R admin/dist/. site/dist/admin/
 
+echo "=== Generating SEO (sitemap, feed, robots) ==="
+(cd site && node scripts/gen-seo.mjs)
+
 echo "=== Build complete: publish directory 'site/dist' ==="

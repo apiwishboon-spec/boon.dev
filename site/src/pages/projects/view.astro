@@ -17,10 +17,11 @@ import Base from "../../layouts/Base.astro";
   import type { AllData } from "../../lib/types";
 
   const params = new URLSearchParams(location.search);
-  const id = params.get("id") || "";
+  const pathSlug = (location.pathname.match(/\/(?:projects|blog)\/([^/]+?)\/?$/) || [])[1];
+  const id = params.get("id") || params.get("slug") || (pathSlug && pathSlug !== "view" ? pathSlug : "") || "";
 
   bootSite((data: AllData) => {
-    const project = data.projects.find((p) => p.id === id);
+    const project = data.projects.find((p) => p.id === id || p.slug === id);
     const wrap = document.getElementById("project");
     if (!wrap) return;
 
@@ -37,9 +38,45 @@ import Base from "../../layouts/Base.astro";
       <div class="flex gap-2" style="gap:12px;margin-bottom:26px;">
         ${project.live_url ? `<a class="btn btn-primary" href="${escapeHtml(project.live_url)}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live</a>` : ""}
         ${project.github_url ? `<a class="btn btn-ghost" href="${escapeHtml(project.github_url)}" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Source</a>` : ""}
+        <button class="btn btn-ghost" id="copy-link" type="button"><i class="fa-solid fa-link"></i> Copy link</button>
       </div>
       <div class="prose" style="border-top:1px solid var(--border);padding-top:26px;">${renderMarkdown(project.body)}</div>
     `;
     document.title = (data.config.brand ? data.config.brand + " | " : "") + project.title;
+
+    const ogTitle = project.title + (data.config.brand ? " | " + data.config.brand : "");
+    const ogDesc = project.tagline || project.description || "";
+    const ogUrl = `${location.origin}/projects/${encodeURIComponent(project.slug)}`;
+    const setMeta = (sel: string, attr: string, value: string) => {
+      const el = document.head.querySelector(`meta[${attr}="${sel}"]`);
+      if (el) el.setAttribute("content", value);
+    };
+    setMeta("og:title", "property", ogTitle);
+    setMeta("og:description", "property", ogDesc);
+    setMeta("og:url", "property", ogUrl);
+    setMeta("twitter:title", "name", ogTitle);
+    setMeta("twitter:description", "name", ogDesc);
+    if (project.cover_url) {
+      const img = project.cover_url.startsWith("http") ? project.cover_url : location.origin + project.cover_url;
+      setMeta("og:image", "property", img);
+      setMeta("twitter:image", "name", img);
+    }
+    const canon = document.head.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute("href", ogUrl);
+
+    const copyBtn = document.getElementById("copy-link");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(location.href);
+          copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+        } catch {
+          copyBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Copy failed';
+        }
+        setTimeout(() => {
+          copyBtn.innerHTML = '<i class="fa-solid fa-link"></i> Copy link';
+        }, 1600);
+      });
+    }
   });
 </script>

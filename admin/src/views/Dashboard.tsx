@@ -13,6 +13,7 @@ const modules: string[] = [
   "resources",
   "skills",
   "timeline",
+  "uptime",
 ];
 
 const texts: Record<string, { title: string; desc: string }> = {
@@ -24,6 +25,7 @@ const texts: Record<string, { title: string; desc: string }> = {
   resources: { title: "Resources", desc: "File downloads grouped by category." },
   skills: { title: "Skills", desc: "The skills shown on your site." },
   timeline: { title: "Timeline", desc: "Your journey milestones." },
+  uptime: { title: "Uptime", desc: "Services shown on the uptime dashboard." },
 };
 
 export default function Dashboard({ user }: { user: User }) {
@@ -79,7 +81,7 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "slug", label: "Slug (URL)" },
               { name: "tagline", label: "Tagline" },
               { name: "description", label: "Description", type: "textarea" },
-              { name: "cover_url", label: "Cover image URL" },
+              { name: "cover_url", label: "Cover image", type: "file" },
               { name: "tech", label: "Tech tags", type: "tags", hint: 'JSON array, e.g. ["Python","AI"]' },
               { name: "tags", label: "Tags", type: "json", hint: 'JSON array' },
               { name: "live_url", label: "Live URL" },
@@ -88,7 +90,7 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "featured", label: "Featured", type: "checkbox" },
               { name: "sort_order", label: "Order", type: "number" },
             ]}
-            viewUrl={(r) => `/projects/view?id=${encodeURIComponent(r.id)}`}
+            viewUrl={(r) => `/projects/${encodeURIComponent(r.slug)}`}
           />
         )}
         {active === "blog" && (
@@ -104,10 +106,10 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "date", label: "Date (YYYY-MM-DD)" },
               { name: "excerpt", label: "Excerpt", type: "textarea" },
               { name: "body", label: "Body (markdown)", type: "textarea" },
-              { name: "image_url", label: "Image URL" },
+              { name: "image_url", label: "Image", type: "file" },
               { name: "published", label: "Published", type: "checkbox" },
             ]}
-            viewUrl={(r) => `/blog/view?id=${encodeURIComponent(r.id)}`}
+            viewUrl={(r) => `/blog/${encodeURIComponent(r.slug)}`}
           />
         )}
         {active === "honors" && (
@@ -119,7 +121,7 @@ export default function Dashboard({ user }: { user: User }) {
             fields={[
               { name: "title", label: "Title" },
               { name: "description", label: "Description" },
-              { name: "image_url", label: "Image URL" },
+              { name: "image_url", label: "Image", type: "file" },
               { name: "alt", label: "Alt text" },
               { name: "badge_label", label: "Badge label" },
               { name: "badge_icon", label: "Badge icon (Font Awesome class)" },
@@ -141,8 +143,8 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "category", label: "Category" },
               { name: "title", label: "Title" },
               { name: "description", label: "Description", type: "textarea" },
-              { name: "file_url", label: "File URL" },
-              { name: "preview_url", label: "Preview image URL" },
+              { name: "file_url", label: "File", type: "file" },
+              { name: "preview_url", label: "Preview image", type: "file" },
               { name: "file_type", label: "File type (PNG/PDF/…)" },
               { name: "file_size", label: "File size" },
               { name: "protected", label: "Password protected", type: "checkbox" },
@@ -173,6 +175,29 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "description", label: "Description", type: "textarea" },
               { name: "icon", label: "Icon (Font Awesome class)" },
               { name: "is_current", label: "Current", type: "checkbox" },
+              { name: "sort_order", label: "Order", type: "number" },
+            ]}
+          />
+        )}
+        {active === "uptime" && (
+          <ResourceCrud
+            table="uptime_targets"
+            title="Uptime Targets"
+            subtitle="url"
+            orderBy="sort_order"
+            fields={[
+              { name: "name", label: "Name" },
+              { name: "url", label: "URL", hint: "Required when mode = auto" },
+              {
+                name: "mode",
+                label: "Status mode",
+                type: "select",
+                options: ["auto", "operational", "degraded", "maintenance", "down", "custom"],
+                hint: "auto = live check · custom = use your own label below",
+              },
+              { name: "custom_label", label: "Custom status label", hint: "Shown when mode = custom" },
+              { name: "note", label: "Note", type: "textarea", hint: "Optional detail, e.g. maintenance window" },
+              { name: "enabled", label: "Enabled", type: "checkbox" },
               { name: "sort_order", label: "Order", type: "number" },
             ]}
           />

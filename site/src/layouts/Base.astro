@@ -6,11 +6,18 @@ import "../styles/global.css";
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: string;
 }
 const {
   title = "Boon",
   description = "Portfolio of Apiwish (Boon) — Future Scientist & Developer.",
+  canonical = "https://boon.is-a.dev/",
+  ogImage = "/profile_me.jpg",
+  ogType = "website",
 } = Astro.props;
+const absOg = ogImage.startsWith("http") ? ogImage : "https://boon.is-a.dev" + ogImage;
 ---
 
 <!doctype html>
@@ -20,6 +27,28 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
+
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="Boon.dev Blog" href="/feed.xml" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={absOg} />
+    <meta property="og:site_name" content="Boon.dev" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absOg} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Boon.dev",
+      url: canonical,
+    })}></script>
 
     <!-- Design fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
