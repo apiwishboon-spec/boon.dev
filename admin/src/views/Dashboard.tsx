@@ -30,9 +30,34 @@ const texts: Record<string, { title: string; desc: string }> = {
 
 export default function Dashboard({ user }: { user: User }) {
   const [active, setActive] = useState("site");
+  const [deploy, setDeploy] = useState<{ busy: boolean; msg: string; ok?: boolean }>({ busy: false, msg: "" });
 
   async function logout() {
     await supabase.auth.signOut();
+  }
+
+  async function redeploy() {
+    setDeploy({ busy: true, msg: "" });
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    try {
+      const r = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/redeploy`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && !j.success && j.result?.id) {
+        setDeploy({ busy: false, msg: "Deploy started — live in ~1 minute.", ok: true });
+      } else if (r.ok && j.success === false) {
+        setDeploy({ busy: false, msg: j.errors?.[0]?.message || "Cloudflare rejected the request.", ok: false });
+      } else if (r.ok) {
+        setDeploy({ busy: false, msg: "Deploy triggered.", ok: true });
+      } else {
+        setDeploy({ busy: false, msg: j.error || "Redeploy failed.", ok: false });
+      }
+    } catch {
+      setDeploy({ busy: false, msg: "Couldn't reach the redeploy service.", ok: false });
+    }
   }
 
   return (
@@ -41,6 +66,25 @@ export default function Dashboard({ user }: { user: User }) {
         <h1>Boon Admin</h1>
         <div className="user">
           {user.email} · <a onClick={logout} style={{ cursor: "pointer" }}>Sign out</a>
+        </div>
+        <div style={{ margin: "14px 0 4px" }}>
+          <button
+            className="btn btn-primary btn-block"
+            style={{ borderRadius: 12 }}
+            disabled={deploy.busy}
+            onClick={redeploy}
+            title="Rebuild the live site + regenerate sitemap/RSS from latest content"
+          >
+            <i className="fa-solid fa-rocket" /> {deploy.busy ? "Deploying…" : "Rebuild live site"}
+          </button>
+          {deploy.msg && (
+            <div
+              className="muted"
+              style={{ marginTop: 8, fontSize: 12, color: deploy.ok !== false ? "#2fbf71" : "#ef5b5b" }}
+            >
+              {deploy.msg}
+            </div>
+          )}
         </div>
         {modules.map((m) => (
           <button
@@ -106,6 +150,7 @@ export default function Dashboard({ user }: { user: User }) {
               { name: "date", label: "Date (YYYY-MM-DD)" },
               { name: "excerpt", label: "Excerpt", type: "textarea" },
               { name: "body", label: "Body (markdown)", type: "textarea" },
+              { name: "tags", label: "Tags", type: "tags", hint: 'JSON array, e.g. ["Space","AI"]' },
               { name: "image_url", label: "Image", type: "file" },
               { name: "published", label: "Published", type: "checkbox" },
             ]}

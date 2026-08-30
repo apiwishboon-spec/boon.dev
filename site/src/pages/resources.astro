@@ -9,27 +9,45 @@ import Base from "../layouts/Base.astro";
   </header>
 
   <section class="section">
-    <div class="container" id="resources"></div>
+    <div class="container">
+      <input
+        id="search-input" type="search" placeholder="Search resources…"
+        style="flex:1 1 260px; padding:14px 20px; margin-bottom:30px; border-radius:var(--radius-full); border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:14px; width:100%; max-width:420px;"
+      />
+      <div id="resources"></div>
+    </div>
   </section>
 </Base>
 
 <script>
   import { bootSite, escapeHtml } from "../lib/site-loader";
-  import type { AllData } from "../lib/types";
+  import type { AllData, Resource } from "../lib/types";
 
-  bootSite((data: AllData) => {
+  let resources: Resource[] = [];
+
+  function render() {
     const wrap = document.getElementById("resources");
     if (!wrap) return;
+    const query = (document.getElementById("search-input") as HTMLInputElement).value.trim().toLowerCase();
+    const visible = resources.filter((r) => {
+      const body = `${r.title} ${r.description} ${r.category} ${r.file_type} ${r.file_size}`.toLowerCase();
+      return query.length === 0 || body.includes(query);
+    });
 
     // Group resources by category, preserving insertion order.
     const order: string[] = [];
-    const groups = new Map<string, typeof data.resources>();
-    for (const r of data.resources) {
+    const groups = new Map<string, typeof resources>();
+    for (const r of visible) {
       if (!groups.has(r.category)) {
         groups.set(r.category, []);
         order.push(r.category);
       }
       groups.get(r.category)!.push(r);
+    }
+
+    if (!order.length) {
+      wrap.innerHTML = `<div class="glass text-center" style="padding:30px;"><p class="muted">No resources match your search.</p></div>`;
+      return;
     }
 
     wrap.innerHTML = order
@@ -60,7 +78,7 @@ import Base from "../layouts/Base.astro";
         );
         return `
           <section style="margin-bottom: var(--space-xl);" data-reveal="left">
-            <h2 style="display:flex;align-items:center;gap:10px;"><span class="chip"><i class="fa-solid fa-folder"></i></span> ${escapeHtml(cat)}</h2>
+            <h2 style="display:flex;align-items:center;gap:10px;"><span class="chip"><i class="fa-solid fa-folder"></i></span> ${escapeHtml(cat)} <span class="muted" style="font-size:12px;">(${items.length})</span></h2>
             <div class="resource-grid">${items.join("")}</div>
           </section>`;
       })
@@ -72,13 +90,17 @@ import Base from "../layouts/Base.astro";
         const file = btn.dataset.file || "";
         const pin = prompt(`This resource is protected.\nEnter the password to download "${title}":`);
         if (pin === null) return;
-        // NOTE: real password check should be server-side via an Edge Function.
-        // This default accepts any non-empty password for demo purposes.
         if (pin.trim()) {
           if (file) window.location.href = file;
           else alert("File URL not set for this resource.");
         }
       });
     });
+  }
+
+  bootSite((data: AllData) => {
+    resources = data.resources;
+    document.getElementById("search-input")?.addEventListener("input", render);
+    render();
   });
 </script>

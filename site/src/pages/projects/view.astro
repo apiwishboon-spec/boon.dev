@@ -30,6 +30,15 @@ import Base from "../../layouts/Base.astro";
       return;
     }
 
+    const sorted = [...data.projects].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+    const idx = sorted.findIndex((q) => q.id === project.id);
+    const prevProject = sorted[idx - 1];
+    const nextProject = sorted[idx + 1];
+    const navBtn = (label: string, title: string, href: string) =>
+      `<a class="btn btn-ghost" style="max-width:46%;line-height:1.5;" href="${href}"><span style="display:block;font-size:11px;font-family:var(--font-mono);opacity:.7;">${label}</span>${escapeHtml(title)}</a>`;
+    const prevLink = prevProject ? navBtn("← Previous", prevProject.title, `/projects/${encodeURIComponent(prevProject.slug)}`) : "";
+    const nextLink = nextProject ? navBtn("Next →", nextProject.title, `/projects/${encodeURIComponent(nextProject.slug)}`) : "";
+
     wrap.innerHTML = `
       <h1 style="font-size:clamp(36px,5.5vw,58px);">${escapeHtml(project.title)}</h1>
       <p class="lede" style="color:var(--text-muted);font-size:20px;">${escapeHtml(project.tagline || project.description)}</p>
@@ -41,7 +50,29 @@ import Base from "../../layouts/Base.astro";
         <button class="btn btn-ghost" id="copy-link" type="button"><i class="fa-solid fa-link"></i> Copy link</button>
       </div>
       <div class="prose" style="border-top:1px solid var(--border);padding-top:26px;">${renderMarkdown(project.body)}</div>
+      ${prevLink || nextLink ? `<nav style="display:flex;justify-content:space-between;gap:18px;margin-top:44px;">
+        ${prevLink || "<span></span>"}
+        ${nextLink ? `<span style="margin-left:auto;">${nextLink}</span>` : ""}
+      </nav>` : ""}
     `;
+
+    // Related missions (share at least one tech/tag)
+    const related = data.projects
+      .filter((q) => q.id !== project.id && (q.tech || []).some((t) => (project.tech || []).includes(t) || (project.tags || []).includes(t)))
+      .slice(0, 3);
+    if (related.length) {
+      wrap.innerHTML += `
+        <div style="margin-top:44px;">
+          <h2 style="font-size:22px;margin-bottom:16px;"><i class="fa-solid fa-satellite-dish"></i> Related Missions</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
+            ${related.map((q) => `
+              <a class="glass" href="/projects/${encodeURIComponent(q.slug)}" style="padding:18px;border-radius:16px;text-decoration:none;color:inherit;display:block;">
+                <h3 style="font-size:17px;margin:0;">${escapeHtml(q.title)}</h3>
+                <p class="muted" style="font-size:13px;margin:6px 0 0;">${escapeHtml(q.tagline || "")}</p>
+              </a>`).join("")}
+          </div>
+        </div>`;
+    }
     document.title = (data.config.brand ? data.config.brand + " | " : "") + project.title;
 
     const ogTitle = project.title + (data.config.brand ? " | " + data.config.brand : "");

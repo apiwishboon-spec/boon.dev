@@ -18,6 +18,7 @@ const {
   ogType = "website",
 } = Astro.props;
 const absOg = ogImage.startsWith("http") ? ogImage : "https://boon.is-a.dev" + ogImage;
+const cfAnalyticsToken: string = import.meta.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN || "";
 ---
 
 <!doctype html>
@@ -66,6 +67,15 @@ const absOg = ogImage.startsWith("http") ? ogImage : "https://boon.is-a.dev" + o
     ></script>
 
     <link rel="icon" type="image/png" href="/icon.png" />
+
+    {cfAnalyticsToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token":"${cfAnalyticsToken}"}`}
+      ></script>
+    )}
   </head>
   <body>
     <div id="scroll-progress" aria-hidden="true"></div>

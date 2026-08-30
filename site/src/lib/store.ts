@@ -100,6 +100,9 @@ async function resolvePostTags(sb: any, rows: any[]): Promise<BlogPost[]> {
   });
   return rows.map((r) => {
     const { post_tags, ...rest } = r;
-    return { ...rest, tags: tagMap[r.id] ?? [] };
+    // Prefer the editable `tags` jsonb column; fall back to the join table.
+    const tagsCol: string[] = Array.isArray(rest.tags) ? rest.tags : [];
+    const joined = tagMap[r.id] ?? [];
+    return { ...rest, tags: tagsCol.length ? tagsCol : joined };
   });
 }

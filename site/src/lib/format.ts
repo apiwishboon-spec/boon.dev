@@ -25,3 +25,11 @@ export function formatDate(dateText: string | undefined): string {
     day: "2-digit",
   });
 }
+
+/** Rough read time in minutes for a markdown body (200 wpm). */
+export function readingTime(md: string | undefined): number {
+  if (!md) return 0;
+  const text = md.replace(/[#*`>~\[\]()!\-|=_]/g, " ").replace(/\s+/g, " ").trim();
+  const words = text ? text.split(" ").length : 0;
+  return Math.max(1, Math.round(words / 200));
+}

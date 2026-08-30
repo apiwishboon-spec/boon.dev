@@ -11,6 +11,10 @@ import Base from "../../layouts/Base.astro";
 
   <section class="section">
     <div class="container">
+      <input
+        id="search-input" type="search" placeholder="Search projects…"
+        style="flex:1 1 260px; padding:14px 20px; margin-bottom:30px; border-radius:var(--radius-full); border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:14px; width:100%; max-width:420px;"
+      />
       <div class="grid grid-2 tilt-wrap" id="projects" data-reveal-group></div>
     </div>
   </section>
@@ -18,17 +22,34 @@ import Base from "../../layouts/Base.astro";
 
 <script>
   import { bootSite, escapeHtml } from "../../lib/site-loader";
-  import type { AllData } from "../../lib/types";
+  import type { AllData, Project } from "../../lib/types";
 
-  bootSite((data: AllData) => {
+  let projects: Project[] = [];
+
+  function render() {
+    const query = (document.getElementById("search-input") as HTMLInputElement).value.trim().toLowerCase();
+    const filtered = projects.filter((p) => {
+      const body = `${p.title} ${p.tagline} ${p.description} ${(p.tech || []).join(" ")} ${(p.tags || []).join(" ")}`.toLowerCase();
+      return query.length === 0 || body.includes(query);
+    });
     const wrap = document.getElementById("projects");
     if (!wrap) return;
-    wrap.innerHTML = data.projects.map((p) => `
+    if (!filtered.length) {
+      wrap.innerHTML = `<div class="glass text-center" style="grid-column:1/-1;"><p class="muted">No missions match your search.</p></div>`;
+      return;
+    }
+    wrap.innerHTML = filtered.map((p) => `
       <a class="glass project-card tilt flip-y" href="/projects/${encodeURIComponent(p.slug)}" style="color:inherit;text-decoration:none;transform-style:preserve-3d;">
         <div class="pc-icon lift"><i class="fa-solid ${p.tech?.includes("AI") ? "fa-robot" : "fa-gears"}"></i></div>
         <h3 class="lift">${escapeHtml(p.title)}</h3>
         <p class="lift">${escapeHtml(p.tagline || p.description)}</p>
         <div class="tagrow lift">${(p.tech || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
       </a>`).join("");
+  }
+
+  bootSite((data: AllData) => {
+    projects = data.projects;
+    document.getElementById("search-input")?.addEventListener("input", render);
+    render();
   });
 </script>

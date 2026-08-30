@@ -13,7 +13,7 @@ import Base from "../../layouts/Base.astro";
 
 <script>
   import { bootSite, escapeHtml } from "../../lib/site-loader";
-  import { renderMarkdown, formatDate } from "../../lib/format";
+  import { renderMarkdown, formatDate, readingTime } from "../../lib/format";
   import type { AllData } from "../../lib/types";
 
   const params = new URLSearchParams(location.search);
@@ -30,14 +30,45 @@ import Base from "../../layouts/Base.astro";
       return;
     }
 
+    const sorted = [...data.posts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const idx = sorted.findIndex((q) => q.id === post.id);
+    const newerPost = sorted[idx - 1];
+    const olderPost = sorted[idx + 1];
+    const navBtn = (label: string, icon: string, href: string, align: string) =>
+      `<a class="btn btn-ghost" style="max-width:46%;text-align:${align};line-height:1.5;" href="${href}"><span style="display:block;font-size:11px;font-family:var(--font-mono);opacity:.7;">${label}</span>${icon}</a>`;
+    const prevLink = newerPost ? navBtn("Newer", `← ${escapeHtml(newerPost.title)}`, `/blog/${encodeURIComponent(newerPost.slug)}`, "left") : "";
+    const nextLink = olderPost ? navBtn("Older", `${escapeHtml(olderPost.title)} →`, `/blog/${encodeURIComponent(olderPost.slug)}`, "right") : "";
+
     wrap.innerHTML = `
-      <p style="font-family:var(--font-mono);color:var(--cyan);letter-spacing:.1em;">${formatDate(post.date)}</p>
+      <p style="font-family:var(--font-mono);color:var(--cyan);letter-spacing:.1em;">${formatDate(post.date)} · ${readingTime(post.body)} min read</p>
       <h1 style="font-size:clamp(34px,5vw,54px);">${escapeHtml(post.title)}</h1>
       <div class="tagrow" style="margin:10px 0 20px;">${(post.tags || []).map(t => `<span class="chip"><i class="fa-solid fa-tag"></i>${escapeHtml(t)}</span>`).join("")}</div>
       ${post.image_url ? `<img src="${escapeHtml(post.image_url)}" alt="${escapeHtml(post.title)}" style="width:100%;border-radius:20px;border:1px solid var(--border);margin-bottom:26px;box-shadow:var(--shadow-lg);" />` : ""}
       <button class="btn btn-ghost" id="copy-link" type="button" style="margin-bottom:20px;"><i class="fa-solid fa-link"></i> Copy link</button>
       <div class="prose">${renderMarkdown(post.body)}</div>
+      ${prevLink || nextLink ? `<nav style="display:flex;justify-content:space-between;gap:18px;margin-top:44px;border-top:1px solid var(--border);padding-top:22px;">
+        ${prevLink || "<span></span>"}
+        ${nextLink ? `<span style="margin-left:auto;">${nextLink}</span>` : ""}
+      </nav>` : ""}
     `;
+
+    // Related posts (share at least one tag)
+    const related = data.posts
+      .filter((q) => q.id !== post.id && (q.tags || []).some((t) => (post.tags || []).includes(t)))
+      .slice(0, 3);
+    if (related.length) {
+      wrap.innerHTML += `
+        <div style="margin-top:44px;">
+          <h2 style="font-size:22px;margin-bottom:16px;"><i class="fa-solid fa-head-side-virus"></i> Related Logs</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
+            ${related.map((q) => `
+              <a class="glass" href="/blog/${encodeURIComponent(q.slug)}" style="padding:18px;border-radius:16px;text-decoration:none;color:inherit;display:block;">
+                <p class="muted" style="font-family:var(--font-mono);font-size:11px;margin:0 0 6px;">${formatDate(q.date)} · ${readingTime(q.body)} min</p>
+                <h3 style="font-size:17px;margin:0;">${escapeHtml(q.title)}</h3>
+              </a>`).join("")}
+          </div>
+        </div>`;
+    }
     document.title = (data.config.brand ? data.config.brand + " | " : "") + post.title;
 
     const ogTitle = post.title + (data.config.brand ? " | " + data.config.brand : "");
