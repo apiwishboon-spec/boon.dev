@@ -1,104 +1,200 @@
 <!--
   WebGLBackground.astro
-  Real WebGL (Three.js) cosmic starfield + nebula rendered behind content.
-  Fully client-side; adapts to viewport, mouse parallax, and reduced-motion.
+  Real WebGL (Three.js): rotating 3D planet + ring + orbiting moon,
+  glowing sun, and a dense twinkling starfield. Rendered behind the hero.
 -->
 <canvas id="webgl-bg" aria-hidden="true"></canvas>
 
 <script>
   import * as THREE from "three";
-
+  (function () {
   const canvas = document.getElementById("webgl-bg") as HTMLCanvasElement;
   const hero = canvas.closest(".hero") as HTMLElement | null;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!canvas || !(window as any).WebGLRenderingContext) {
     if (canvas) canvas.remove();
-  } else {
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        canvas, alpha: true, antialias: true, powerPreference: "high-performance",
-      });
-    } catch {
-      canvas.remove();
-      throw new Error("WebGL unavailable");
-    }
+    return;
+  }
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 100);
-
-    // ---- Starfield particles ----
-    const STAR_COUNT = 1600;
-    const starGeo = new THREE.BufferGeometry();
-    const positions = new Float32Array(STAR_COUNT * 3);
-    const sizes = new Float32Array(STAR_COUNT);
-    const colors = new Float32Array(STAR_COUNT * 3);
-
-    const palette = [
-      new THREE.Color("#7aa8ff"),
-      new THREE.Color("#c084fc"),
-      new THREE.Color("#4ff2ff"),
-      new THREE.Color("#ffffff"),
-      new THREE.Color("#ff7ad9"),
-    ];
-    const R = 5;
-
-    for (let i = 0; i < STAR_COUNT; i++) {
-      // distribute on a sphere shell
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const r = R + (Math.random() - 0.5) * 2.2;
-      positions[i * 3 + 0] = r * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = r * Math.cos(phi);
-      positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
-      sizes[i] = (Math.random() * 0.5 + 0.15) * (2.4 - Math.abs(positions[i * 3 + 1]) * 0.28);
-      const c = palette[Math.floor(Math.random() * palette.length)];
-      colors[i * 3 + 0] = c.r;
-      colors[i * 3 + 1] = c.g;
-      colors[i * 3 + 2] = c.b;
-    }
-    starGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    starGeo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
-    starGeo.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
-
-    const starMat = new THREE.PointsMaterial({
-      size: 0.045, vertexColors: true, transparent: true, opacity: 0.95,
-      sizeAttenuation: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  let renderer: THREE.WebGLRenderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas, alpha: true, antialias: true, powerPreference: "high-performance",
     });
-    const stars = new THREE.Points(starGeo, starMat);
-    scene.add(stars);
+  } catch {
+    canvas.remove();
+    return;
+  }
 
-    // ---- Nebula glow sprites ----
-    const spriteDot = (() => {
+  const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+    camera.position.set(0, 0.4, 4.2);
+    camera.lookAt(0, 0, 0);
+
+    // ---- shared glow texture ----
+    const glowTex = (() => {
       const c = document.createElement("canvas"); c.width = c.height = 128;
       const ctx = c.getContext("2d")!;
       const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
       g.addColorStop(0, "rgba(255,255,255,1)");
-      g.addColorStop(0.4, "rgba(255,255,255,0.35)");
+      g.addColorStop(0.35, "rgba(255,255,255,0.35)");
       g.addColorStop(1, "rgba(255,255,255,0)");
       ctx.fillStyle = g; ctx.fillRect(0, 0, 128, 128);
       return new THREE.CanvasTexture(c);
     })();
 
-    const nebColor = [0x7aa8ff, 0xc084fc, 0xff7ad9, 0x4ff2ff];
-    const NB = 42;
-    for (let i = 0; i < NB; i++) {
-      const mat = new THREE.SpriteMaterial({
-        map: spriteDot, color: nebColor[i % nebColor.length],
-        transparent: true, opacity: 0.12 + Math.random() * 0.16,
-        blending: THREE.AdditiveBlending, depthWrite: false,
-      });
-      const s = new THREE.Sprite(mat);
-      const ka = Math.random() * Math.PI * 2, kb = Math.acos(2 * Math.random() - 1);
-      const rr = 1.6 + Math.random() * 2.6;
-      s.position.set(rr * Math.sin(kb) * Math.cos(ka), rr * Math.cos(kb), rr * Math.sin(kb) * Math.sin(ka));
-      s.scale.set(1.4, 1.4, 1);
+    // ===================== SUN =====================
+    const sun = new THREE.Mesh(
+      new THREE.SphereGeometry(0.5, 32, 32),
+      new THREE.MeshBasicMaterial({ color: 0xffd27a })
+    );
+    sun.position.set(-3.4, 1.5, -2.4);
+    scene.add(sun);
+    const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: glowTex, color: 0xffb14d, transparent: true, opacity: 0.55,
+      blending: THREE.AdditiveBlending, depthWrite: false,
+    }));
+    sunGlow.scale.set(3, 3, 1);
+    sunGlow.position.copy(sun.position);
+    scene.add(sunGlow);
+    sun.userData.base = sun.position.clone();
+
+    // ---- the whole planetary system grouped & offset right ----
+    const system = new THREE.Group();
+    system.position.set(1.9, -0.1, 0);
+
+    // ===================== PLANET =====================
+    const planetGeo = new THREE.SphereGeometry(0.95, 64, 64);
+    // procedural color-banded material via onBeforeCompile shader tint
+    const planetMat = new THREE.MeshStandardMaterial({
+      color: 0x4a7dff, roughness: 0.55, metalness: 0.25,
+    });
+    const planet = new THREE.Mesh(planetGeo, planetMat);
+    // subtle surface bands using a custom canvas texture
+    const bands = (() => {
+      const c = document.createElement("canvas"); c.width = 256; c.height = 256;
+      const ctx = c.getContext("2d")!;
+      ctx.fillStyle = "#2b4fc7"; ctx.fillRect(0, 0, 256, 256);
+      for (let y = 0; y < 256; y++) {
+        const t = (y / 256) * Math.PI;
+        const shade = 0.75 + 0.25 * Math.sin(t * 6);
+        const r = Math.round(70 * shade), g = Math.round(120 * shade), b = Math.round(230 * shade);
+        ctx.fillStyle = `rgb(${r},${g},${b})`;
+        ctx.fillRect(0, y, 256, 1);
+      }
+      // add noisy spots for a living surface
+      for (let i = 0; i < 1600; i++) {
+        ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.18})`;
+        ctx.fillRect(Math.random() * 256, Math.random() * 256, 3 + Math.random() * 5, 3 + Math.random() * 5);
+      }
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    })();
+    planetMat.map = bands;
+    system.add(planet);
+
+    // atmosphere glow halo
+    const halo = new THREE.Mesh(
+      new THREE.SphereGeometry(1.02, 48, 48),
+      new THREE.MeshBasicMaterial({
+        color: 0x67c8ff, transparent: true, opacity: 0.16,
+        side: THREE.BackSide, blending: THREE.AdditiveBlending, depthWrite: false,
+      })
+    );
+    system.add(halo);
+
+    // ===================== RING =====================
+    const ringGeo = new THREE.RingGeometry(1.45, 2.15, 96);
+    const ringPos = ringGeo.attributes.position;
+    const rv = new Float32Array(ringPos.count * 3);
+    for (let i = 0; i < ringPos.count; i++) {
+      rv[i * 3] = ringPos.getX(i);
+      rv[i * 3 + 1] = ringPos.getY(i) * 0.22; // flatten to a disk
+      rv[i * 3 + 2] = ringPos.getZ(i);
+    }
+    ringGeo.setAttribute("position", new THREE.BufferAttribute(rv, 3));
+    const ringMat = new THREE.MeshBasicMaterial({
+      color: 0x7aa8ff, side: THREE.DoubleSide, transparent: true,
+      opacity: 0.7, depthWrite: false,
+    });
+    const ring = new THREE.Mesh(ringGeo, ringMat);
+    ring.rotation.x = Math.PI / 2.6;
+    system.add(ring);
+
+    // faint icy particles in the ring gap
+    const dirtGeo = new THREE.BufferGeometry();
+    const dirtPos = new Float32Array(700 * 3);
+    for (let i = 0; i < 700; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 1.5 + Math.random() * 0.6;
+      dirtPos[i * 3] = Math.cos(a) * r;
+      dirtPos[i * 3 + 1] = (Math.random() - 0.5) * 0.08;
+      dirtPos[i * 3 + 2] = Math.sin(a) * r;
+    }
+    dirtGeo.setAttribute("position", new THREE.BufferAttribute(dirtPos, 3));
+    const dirt = new THREE.Points(dirtGeo, new THREE.PointsMaterial({
+      color: 0xbfe8ff, size: 0.02, sizeAttenuation: true,
+      transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending, depthWrite: false,
+    }));
+    system.add(dirt);
+
+    // ===================== ORBITING MOON =====================
+    const moon = new THREE.Mesh(
+      new THREE.SphereGeometry(0.16, 24, 24),
+      new THREE.MeshStandardMaterial({ color: 0xcfd6ff, roughness: 0.9 })
+    );
+    system.add(moon);
+
+    scene.add(system);
+
+    // ===================== STARFIELD =====================
+    const STAR_COUNT = 2200;
+    const starGeo = new THREE.BufferGeometry();
+    const sPos = new Float32Array(STAR_COUNT * 3);
+    const sCol = new Float32Array(STAR_COUNT * 3);
+    const palette = [0xffffff, 0xfff3d1, 0xbfe0ff, 0xffd6f5, 0xc7fffa, 0xdfc9ff];
+    for (let i = 0; i < STAR_COUNT; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 7 + Math.random() * 10;
+      sPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      sPos[i * 3 + 1] = r * Math.cos(phi);
+      sPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+      const c = new THREE.Color(palette[(Math.random() * palette.length) | 0]);
+      sCol[i * 3] = c.r; sCol[i * 3 + 1] = c.g; sCol[i * 3 + 2] = c.b;
+    }
+    starGeo.setAttribute("position", new THREE.BufferAttribute(sPos, 3));
+    starGeo.setAttribute("color", new THREE.BufferAttribute(sCol, 3));
+    const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({
+      size: 0.07, map: glowTex, vertexColors: true, transparent: true, opacity: 0.95,
+      sizeAttenuation: true, blending: THREE.AdditiveBlending, depthWrite: false,
+    }));
+    scene.add(stars);
+
+    // ===================== NEBULA =====================
+    const nebCols = [0x7aa8ff, 0xc084fc, 0xff7ad9, 0x4ff2ff];
+    const nebulas: THREE.Sprite[] = [];
+    for (let i = 0; i < 55; i++) {
+      const s = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: glowTex, color: nebCols[i % nebCols.length], transparent: true,
+        opacity: 0.10 + Math.random() * 0.14, blending: THREE.AdditiveBlending, depthWrite: false,
+      }));
+      const a = Math.random() * Math.PI * 2, b = Math.acos(2 * Math.random() - 1);
+      const rr = 2 + Math.random() * 4;
+      s.position.set(rr * Math.sin(b) * Math.cos(a), rr * Math.cos(b), rr * Math.sin(b) * Math.sin(a));
+      s.scale.set(1.6 + Math.random() * 1.6, 1.6 + Math.random() * 1.6, 1);
       scene.add(s);
+      nebulas.push(s);
     }
 
-    // ---- resizing ----
-    let ro: ResizeObserver | null = null;
+    scene.add(new THREE.AmbientLight(0x334488, 0.6));
+    const key = new THREE.DirectionalLight(0xfff0c0, 1.4);
+    key.position.set(-3.4, 1.5, -2.4);
+    scene.add(key);
+
+    // ===================== resize =====================
     function resize() {
       const w = canvas.clientWidth || 1;
       const h = canvas.clientHeight || 1;
@@ -107,58 +203,64 @@
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
-    if ("ResizeObserver" in window) {
-      ro = new ResizeObserver(resize);
-      ro.observe(canvas.parentElement || canvas);
-    }
+    let ro: ResizeObserver | null = null;
+    if ("ResizeObserver" in window) { ro = new ResizeObserver(resize); ro.observe(canvas.parentElement || canvas); }
     resize();
 
-    // ---- pointer / mouse parallax ----
-    const target = { x: 0, y: 0 };
-    const cur = { x: 0, y: 0 };
+    // ===================== mouse parallax =====================
+    const target = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
     const onMove = (e: MouseEvent) => {
-      target.x = (e.clientX / window.innerWidth - 0.5) * 2;
-      target.y = (e.clientY / window.innerHeight - 0.5) * 2;
+      target.x = (e.clientX / window.innerWidth - 0.5);
+      target.y = (e.clientY / window.innerHeight - 0.5);
     };
     window.addEventListener("mousemove", onMove, { passive: true });
 
-    // ---- animation loop ----
+    // ===================== loop =====================
     const clock = new THREE.Clock();
     let raf = 0;
-    let speed = reduced ? 0.02 : 0.06;
+    const speed = reduced ? 0.05 : 0.22;
 
     function tick() {
       const dt = clock.getDelta();
-      stars.rotation.y += dt * speed;
-      stars.rotation.x += dt * speed * 0.35;
-      cur.x += (target.x - cur.x) * 0.04;
-      cur.y += (target.y - cur.y) * 0.04;
-      stars.rotation.y += cur.x * 0.0006;
-      camera.position.x = cur.x * 0.35;
-      camera.position.y = cur.y * 0.28;
+      planet.rotation.y += dt * speed;
+      halo.rotation.y += dt * speed * 0.9;
+      ring.rotation.z += dt * speed * 0.4;
+      dirt.rotation.z += dt * speed * 0.4;
+      sun.rotation.y += dt * speed * 0.1;
+      // orbit the moon
+      const ta = clock.elapsedTime * speed;
+      moon.position.set(Math.cos(ta) * 1.6, Math.sin(ta * 0.6) * 0.6, Math.sin(ta) * 1.6);
+      // twinkle stars
+      stars.rotation.y += dt * speed * 0.03;
+      stars.material.opacity = 0.85 + Math.sin(clock.elapsedTime * 2) * 0.1;
+      // subtle nebula pulsation
+      nebulas.forEach((n, i) => {
+        const o = 0.1 + 0.06 * Math.sin(clock.elapsedTime * 1.4 + i * 1.7);
+        (n.material as THREE.SpriteMaterial).opacity = o;
+      });
+      // mouse parallax
+      cur.x += (target.x - cur.x) * 0.05;
+      cur.y += (target.y - cur.y) * 0.05;
+      camera.position.x = cur.x * 0.6;
+      camera.position.y = 0.4 + cur.y * 0.4;
       camera.lookAt(0, 0, 0);
       renderer.render(scene, camera);
       raf = requestAnimationFrame(tick);
     }
     tick();
 
-    // stop when hero scrolls out of view (mobile perf) — restart when back
     const io = new IntersectionObserver(([e]) => {
       if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
       else { cancelAnimationFrame(raf); raf = 0; }
     }, { threshold: 0.05 });
     if (hero) io.observe(hero);
-  }
+  })();
 </script>
 
 <style>
   #webgl-bg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
   }
   .hero > div { position: relative; z-index: 2; }
 </style>
